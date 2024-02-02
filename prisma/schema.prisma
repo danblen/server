@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"  // 数据库引擎，可以切换为其他引擎
+  url      = env("DATABASE_URL")  // 数据库连接配置
+}
+// 用户表
+model User {
+  id        Int      @id @default(autoincrement())
+  userId    String   @unique  // 用户的id
+  points      Int?     @default(0) // 用户的积分
+  isChecked      Boolean? @default(false) // 当天是否签到
+  level       String @default("1")
+  createdAt DateTime @default(now())  // 用户创建的时间
+  updatedAt DateTime @updatedAt  // 用户数据更新的时间
+  lastLoginAt DateTime @updatedAt  // 用户上一次登陆的时间
+}
+// 换脸任务表
+model UserProcessImageData {
+  userId           String   // 用户的id
+  mainImagePath   String?
+  roopImagePath   String?
+  img2imgreqData   String?  // 存储JSON格式的img2imgreq数据，在 Prisma 使用 String 表示 JSON
+  outputImagePath String?
+  createdAt        DateTime @default(now())  // 使用 Prisma 的 @default 指令设置默认值
+  beforProcessTime Float?
+  processTime      Float?
+  imageType        String?
+  requestId        String @id @unique // 在 Prisma 使用 @id 和 @unique 指令表示主键和唯一约束
+  requestStatus    String? @default("no-data")
+  userLikeStatus  Int? @default(0)
+}
+
+// 图片索引表
+model ImageIndex {
+  id               Int      @id @default(autoincrement())
+  imageUrl        String
+  description      String?
+  category         String?  // 图像分类
+  tags             String?  // 图像标签
+  createdAt        DateTime @default(now())
+  likesCount       Int     @default(0)
+}
+model ImageUserUpload {
+  userId           String   // 用户的id
+  id               Int      @id @default(autoincrement())
+  imageUrl        String?
+  data            String?
+  contentType    String?   // base64
+  description      String?
+  category         String?  // 图像分类
+  tags             String?  // 图像标签
+  createdAt        DateTime @default(now())
+  likesCount       Int     @default(0)
+}
+
+// model ImageTag {
+//   id         Int      @id @default(autoincrement())
+//   tagName    String
+//   images     ImageIndex[]
+// }
+
+// model PopularImage {
+//   id         Int      @id @default(autoincrement())
+//   imageId    Int
+//   image      ImageIndex @relation(fields: [imageId], references: [id])
+//   createdAt  DateTime @default(now())
+// }
+
+// model TimeBasedImage {
+//   id         Int      @id @default(autoincrement())
+//   imageId    Int
+//   image      ImageIndex @relation(fields: [imageId], references: [id])
+//   timestamp  DateTime
+// }

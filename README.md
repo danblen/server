@@ -1,46 +1,44 @@
+# 安装工具
+
+需要先安装 node
+
+### 安装 yarn
+
+npm i -g yarn
+
+### 安装依赖
+
 yarn
-以测试环境启动：
+
+### 启动后台服务：
+
 npm run start:dev
-以线上环境启动：
-npm run start
 
-## 部署发布
+# 数据库：
 
-### 编写 Dockerfile
+### 创建数据库：
 
-```dockerfile
-# 使用官方 Node.js 12 轻量级镜像.
-# https://hub.docker.com/_/node
-FROM node:12-slim
+在终端中运行以下命令，创建 SQLite 数据库文件：
 
-# 定义工作目录
-WORKDIR /usr/src/app
+npx prisma db push
 
-# 将依赖定义文件拷贝到工作目录下
-COPY package*.json ./
+### 生成 Prisma Client：
 
-# 以 production 形式安装依赖
-RUN npm install --only=production
+npx prisma generate
 
-# 将本地代码复制到工作目录内
-COPY ../function-to-run ./
+### 使用 Prisma Client：
 
-# 启动服务
-CMD [ "node", "server.js" ]
-```
+在你的应用程序中，通过 Prisma Client 来执行数据库操作。例如：
 
-### 上传代码包
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
-将目录下所有文件压缩为 zip：
+# 备注
 
-![](https://main.qcloudimg.com/raw/2f7b3d10472cb95f7a87691a679e1ef6.png)
+文件引用要写全扩展名 xxx.js
 
-进入微信云托管，创建环境和服务，然后发布一个版本。
+import { wxConfig } from '../../../config/wxConfig.js';
 
-- 上传方式为本地代码
-- 附件类型为 ZIP 压缩包（即上一步中产生的压缩包）
-- 监听端口为 3000
+不写全扩展名会报错
 
-![](https://main.qcloudimg.com/raw/42ff035c940850d5e4b7915a0a17f40c.png)
-
-随后点击确定，即可创建一个版本，后续发布流程可以参考微信云托管文档。
+import { wxConfig } from '../../../config/wxConfig';
