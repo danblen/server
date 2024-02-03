@@ -9,6 +9,8 @@ import queryResult from './services/sd/queryResult/index.js';
 import queueProcess from './services/sd/queueProcess/index.js';
 import getUserInfo from './services/user/getUserInfo/index.js';
 import login from './services/user/login/index.js';
+import getAllImages from './services/image/getAllImages/index.js';
+import getUserProcessImages from './services/user/getUserProcessImages/index.js';
 
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
@@ -18,15 +20,18 @@ const routes = [
 	['/login', login],
 	['/storeImages', storeImages],
 	['/getBanners', getBanners],
+	['/getAllImages', getAllImages],
 	['/getUserInfo', getUserInfo],
+	['/getUserProcessImage', getUserProcessImages],
 	['/queryResult', queryResult],
 	['/queueProcess', queueProcess],
 	['/uploadImages', uploadImages],
 ];
 
 routes.forEach(([routePath, module]) => {
-	server.setRoute(routePath, module);
+	server.setRoute('post', '/v1' + routePath, module);
 });
+// server.setRoute('get', '/v1' + 'getAllImages', getAllImages);
 
 // // 设置存储图片的目录
 // const storage = multer.diskStorage({
@@ -49,4 +54,4 @@ routes.forEach(([routePath, module]) => {
 // });
 
 // 监听端口
-server.listen(8080);
+server.listen(8081);

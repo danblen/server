@@ -39,7 +39,8 @@ model UserProcessImageData {
 // 图片索引表
 model ImageIndex {
   id               Int      @id @default(autoincrement())
-  imageUrl        String
+  imageUrl        String？
+  data            String？
   description      String?
   category         String?  // 图像分类
   tags             String?  // 图像标签

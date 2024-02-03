@@ -56,9 +56,9 @@ class CloudBaseRunServer {
 		// );
 	}
 
-	setRoute(path, handlerFunction) {
+	setRoute(method, path, handlerFunction) {
 		const contextPath = '';
-		this.server.post(contextPath + path, async (req, res) => {
+		this.server[method](contextPath + path, async (req, res) => {
 			// 黑名单过滤
 			// const requestClientIp = getClientIp(req);
 			// if (

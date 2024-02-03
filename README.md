@@ -1,6 +1,6 @@
 # 安装工具
 
-需要先安装 node
+需要先安装 node 16.14 版本以上
 
 ### 安装 yarn
 
@@ -24,6 +24,10 @@ npx prisma db push
 
 ### 生成 Prisma Client：
 
+npx prisma generate
+
+如果有修改 prisma/schema.prisma 文件需要重新运行这两个命令，迁移数据库
+npx prisma db push
 npx prisma generate
 
 ### 使用 Prisma Client：
