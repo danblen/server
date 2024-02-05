@@ -26,13 +26,13 @@ npx prisma db push
 
 npx prisma generate
 
-如果有修改 prisma/schema.prisma 文件需要重新运行这两个命令，迁移数据库
+如果有修改 prisma/schema.prisma 文件需要重新运行这两个命令迁移数据库
 npx prisma db push
 npx prisma generate
 
 ### 使用 Prisma Client：
 
-在你的应用程序中，通过 Prisma Client 来执行数据库操作。例如：
+在后台服务中，通过 Prisma Client 来执行数据库操作。例如：
 
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();

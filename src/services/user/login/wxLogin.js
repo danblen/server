@@ -1,8 +1,7 @@
-import { PrismaClient } from '@prisma/client';
 import axios from 'axios';
 import { wxConfig } from '../../../config/wxConfig.js';
+import prisma from '../../../db/prisma.js';
 
-const prisma = new PrismaClient();
 // 微信登陆接口
 export default async (reqBody, res) => {
 	try {

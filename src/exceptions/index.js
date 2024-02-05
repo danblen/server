@@ -7,5 +7,4 @@ class MyError extends Error {
 	}
 }
 
-// module.exports = MyError;
 export default MyError;

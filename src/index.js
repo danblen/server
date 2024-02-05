@@ -1,3 +1,8 @@
+/**
+ * 后台服务入口文件
+ * 初始化服务器和定义接口
+ */
+
 import multer from 'multer';
 import path from 'path';
 

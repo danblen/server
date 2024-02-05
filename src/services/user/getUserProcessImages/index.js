@@ -6,6 +6,7 @@ export default async (req, res) => {
 	const userImages = await prisma.userProcessImageData.findMany({
 		where: {
 			userId: req.body.userId,
+			requestStatus: req.body.requestStatus,
 		},
 	});
 	if (userImages) {
