@@ -39,8 +39,8 @@ model UserProcessImageData {
 // 图片索引表
 model ImageIndex {
   id               Int      @id @default(autoincrement())
-  imageUrl        String？
-  data            String？
+  imageUrl        String?
+  data            String?
   description      String?
   category         String?  // 图像分类
   tags             String?  // 图像标签
@@ -51,6 +51,7 @@ model ImageUserUpload {
   userId           String   // 用户的id
   id               Int      @id @default(autoincrement())
   imageUrl        String?
+  userPicPath      String?
   data            String?
   contentType    String?   // base64
   description      String?

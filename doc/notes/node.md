@@ -10,3 +10,8 @@ nvm --version
 
 nvm install 18.19.0
 这将下载并安装 Node.js 18.19.0 版本。
+
+启动：
+npm start
+
+修改文件自动重启：
