@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { wxConfig } from '../../../config/wxConfig.js';
 import prisma from '../../../db/prisma.js';
+import moment from 'moment';
 
 // 微信登陆接口
 export default async (reqBody, res) => {
@@ -25,12 +26,14 @@ export default async (reqBody, res) => {
 		});
 
 		if (!user) {
+			const chinaTime = moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss');
 			// 没查到， 创建新用户
 			const newUser = await prisma.user.create({
 				data: {
 					userId: openid,
 					points: 20,
 					isChecked: false,
+					createdAt: chinaTime,
 				},
 			});
 
@@ -48,7 +51,7 @@ export default async (reqBody, res) => {
 					userId: openid,
 				},
 				data: {
-					lastLoginAt: new Date(),
+					lastLoginAt: moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss'),
 				},
 			});
 
@@ -56,6 +59,7 @@ export default async (reqBody, res) => {
 				userId: user.userId,
 				points: user.points,
 				isChecked: user.isChecked,
+				createdAt: moment().utcOffset(8).format('YYYY-MM-DD HH:mm:ss'), // 将中国时间作为 createdAt 字段的值
 			};
 			return { code: 200, data: userInfo };
 		}
