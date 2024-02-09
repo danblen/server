@@ -2,3 +2,6 @@ node_modules
 .vscode
 yarn-error.log
 static
+.png
+sd_make_images
+appdb.sqlite
