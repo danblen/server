@@ -12,7 +12,7 @@ yarn
 
 ### 启动后台服务：
 
-npm run start:dev
+npm run dev
 
 # 数据库：
 
