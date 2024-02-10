@@ -12,7 +12,19 @@ yarn
 
 ### 启动后台服务：
 
-npm run dev
+yarn dev
+
+### 使用 tmux 启动服务
+
+创建会话
+tmux
+
+在新的 seesion 会话中启动服务
+yarn dev
+
+连接上次 tmux session
+
+tmux attach-session
 
 # 数据库：
 

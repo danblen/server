@@ -15,3 +15,4 @@ nvm install 18.19.0
 npm start
 
 修改文件自动重启：
+nodemon index.js

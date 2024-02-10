@@ -20,6 +20,9 @@ async function ensureDirectoryExists(directory) {
 // 换脸接口
 export default async (req, res) => {
   const { userId } = req.body;
+  if (!userId) {
+    return;
+  }
   const user = await prisma.user.findUnique({
     where: { userId },
   });
@@ -78,6 +81,7 @@ async function saveBase64Image(base64Data, imagesDir) {
 }
 // 积分需要减1
 async function updataUserInfo(userId) {
+  // 需要使用await等待数据库操作，不然更新不成功
   await prisma.user.update({
     where: {
       userId,
@@ -98,10 +102,6 @@ async function updateUserImage(
   roopImagePath
 ) {
   try {
-    if (!userId) {
-      return;
-    }
-
     // 新建一条换脸任务的数据，保存数据到数据库
     const userTask = await prisma.userProcessImageData.create({
       data: {
@@ -113,13 +113,6 @@ async function updateUserImage(
         roopImagePath: roopImagePath || null,
       },
     });
-
-    // 如果保存成功
-    if (userTask.userId) {
-      return;
-    } else {
-      // 处理保存失败的情况
-    }
   } catch (error) {
     console.error('Error updating user info in SQL:', error.message);
   } finally {
