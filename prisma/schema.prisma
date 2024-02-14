@@ -12,6 +12,7 @@ model User {
   userId        String    @unique // 用户的id
   points        Int?      @default(0) // 用户的积分
   isChecked     Boolean?  @default(false) // 当天是否签到
+  lastCheckIn   String?
   level         String    @default("1")
   createdAt     String? // 使用 Prisma 默认的方式存储日期时间
   updatedAt     String?  // 用户数据更新的时间
