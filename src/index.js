@@ -16,25 +16,29 @@ import getUserInfo from './services/user/getUserInfo/index.js';
 import login from './services/user/login/index.js';
 import getAllImages from './services/image/getAllImages/index.js';
 import getUserProcessImages from './services/user/getUserProcessImages/index.js';
+import addPoints from './services/user/addPoints/index.js';
+import checkIn from './services/user/checkIn/index.js';
 
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
 
 // 注册路由，也就是api接口
 const routes = [
-	['/login', login],
-	['/storeImages', storeImages],
-	['/getBanners', getBanners],
-	['/getAllImages', getAllImages],
-	['/getUserInfo', getUserInfo],
-	['/getUserProcessImage', getUserProcessImages],
-	['/queryResult', queryResult],
-	['/queueProcess', queueProcess],
-	['/uploadImages', uploadImages],
+  ['/login', login],
+  ['/storeImages', storeImages],
+  ['/getBanners', getBanners],
+  ['/getAllImages', getAllImages],
+  ['/getUserInfo', getUserInfo],
+  ['/addPoints', addPoints],
+  ['/checkIn', checkIn],
+  ['/getUserProcessImage', getUserProcessImages],
+  ['/queryResult', queryResult],
+  ['/queueProcess', queueProcess],
+  ['/uploadImages', uploadImages],
 ];
 
 routes.forEach(([routePath, module]) => {
-	server.setRoute('post', '/v1' + routePath, module);
+  server.setRoute('post', '/v1' + routePath, module);
 });
 // server.setRoute('get', '/v1' + 'getAllImages', getAllImages);
 
