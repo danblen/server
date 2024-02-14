@@ -22,6 +22,7 @@ export default async (req, res) => {
     return { data: res.data };
   } catch (error) {
     console.error('Error querying data from SQL:', error.message);
+    return { data: error.message };
   } finally {
     await prisma.$disconnect();
   }
