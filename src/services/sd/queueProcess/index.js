@@ -2,9 +2,7 @@ import fs from 'fs/promises'; // 使用 promises 风格的 fs 模块
 import path from 'path';
 import prisma from '../../../db/prisma.js';
 import forwardToGPU from './forwardToGPU.js';
-
-// 工程根目录
-const projectRoot = '/home/ubuntu/code/server/'; // 定义绝对路径
+import { projectRoot } from '../../../common/path.js';
 
 // 检查并创建目录的函数
 async function ensureDirectoryExists(directory) {
