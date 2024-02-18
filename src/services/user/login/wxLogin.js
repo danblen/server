@@ -18,6 +18,14 @@ export default async (reqBody, res) => {
     // 返回微信接口的数据，openid为唯一用户标识
     const wechatData = wechatResponse.data;
     const { openid } = wechatData;
+    if (!openid) {
+      // 处理错误或返回适当的响应
+      return {
+        code: 500,
+        message: 'wechatResponse，openid 未定义或缺失。',
+        data: null,
+      };
+    }
     // 从user表查询用户信息，使用userid查询，结果应唯一
     const user = await prisma.user.findUnique({
       where: {
