@@ -2,7 +2,8 @@ import prisma from '../../../db/prisma.js';
 import forwardToGPU from './forwardToGPU.js';
 import path from 'path';
 import fs from 'fs';
-import moment from 'moment';
+import { format } from 'date-fns';
+import { projectRoot } from '../../../common/path.js';
 
 // 查询换脸结果接口
 export default async (req, res) => {
@@ -28,7 +29,7 @@ export default async (req, res) => {
   }
 };
 
-const uploadDirectory = '/home/ubuntu/code/server/sd_make_images/'; // 定义绝对路径
+const uploadDirectory = projectRoot + '/sd_make_images/'; // 定义绝对路径
 
 // 如果目录不存在，则创建目录
 if (!fs.existsSync(uploadDirectory)) {
@@ -45,7 +46,7 @@ const saveImageData = async (requestData, user_id) => {
       console.log('userid', user_id);
       let filePath = path.join(
         path.join(uploadDirectory, user_id),
-        moment().utcOffset(8).format('YYYY-MM-DD')
+        format(new Date(), 'yyyy-MM-dd')
       ); // 构建文件的绝对路径
 
       if (!fs.existsSync(filePath)) {
