@@ -45,7 +45,7 @@ export default async (req, res) => {
       imagesDir
     );
     const roopImagePath = await saveBase64Image(
-      req.body.alwayson_scripts.roop.args[0],
+      req.body.alwayson_scripts?.roop.args[0],
       imagesDir
     );
     // 保存图片路径到数据库
