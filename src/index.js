@@ -15,6 +15,8 @@ import queueProcess from './services/sd/queueProcess/index.js';
 import getUserInfo from './services/user/getUserInfo/index.js';
 import login from './services/user/login/index.js';
 import getAllImages from './services/image/getAllImages/index.js';
+import deleteSelectImages from './services/image/deleteSelectImages/index.js';
+import deleteAllImages from './services/image/deleteAllImages/index.js';
 import getUserProcessImages from './services/user/getUserProcessImages/index.js';
 import addPoints from './services/user/addPoints/index.js';
 import checkIn from './services/user/checkIn/index.js';
@@ -35,6 +37,8 @@ const routes = [
   ['/queryResult', queryResult],
   ['/queueProcess', queueProcess],
   ['/uploadImages', uploadImages],
+  ['/deleteSelectImages', deleteSelectImages],
+  ['/deleteAllImages', deleteAllImages],
 ];
 
 routes.forEach(([routePath, module]) => {
