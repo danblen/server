@@ -1,10 +1,12 @@
 import prisma from '../../../db/prisma.js';
 
 export default async (req, res) => {
-  const { userLikeStatus, requestId } = req.body;
+  const { requestId, ...updateData } = req.body;
+
   if (!requestId) {
     return null;
   }
+
   const processData = await prisma.UserProcessImageData.findUnique({
     where: {
       requestId,
@@ -12,15 +14,15 @@ export default async (req, res) => {
   });
 
   if (!processData) {
-    return null; // 用户不存在
+    return null; // 数据不存在
   }
+
   const updatedUser = await prisma.UserProcessImageData.update({
     where: {
       requestId,
     },
-    data: {
-      userLikeStatus: userLikeStatus,
-    },
+    data: updateData,
   });
+
   return { data: updatedUser };
 };

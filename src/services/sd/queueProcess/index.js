@@ -51,7 +51,7 @@ export default async (req, res) => {
     // 保存图片路径到数据库
     updateUserImage(userId, requestId, mainImagePath, roopImagePath);
     // 积分需要减1
-    updataUserInfo(userId);
+    // updataUserInfo(userId);
     return {
       data: { requestId, status: 'pending', type: 'img2img' },
     };

@@ -7,7 +7,12 @@ export default async (req, res) => {
       userId: req.body.userId,
     },
   });
-
+  //打开此处，修改所有用户积分
+  // await prisma.user.updateMany({
+  //   data: {
+  //     points: 500,
+  //   },
+  // });
   if (!user) {
     return { data: null };
   } else {

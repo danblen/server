@@ -5,6 +5,21 @@ import fs from 'fs';
 import { format } from 'date-fns';
 import { projectRoot } from '../../../common/path.js';
 
+// 积分需要减1
+async function updataUserInfo(userId) {
+  // 需要使用await等待数据库操作，不然更新不成功
+  await prisma.user.update({
+    where: {
+      userId,
+    },
+    data: {
+      points: {
+        // 使用 Prisma 提供的数学运算符对积分进行减一操作
+        decrement: 1,
+      },
+    },
+  });
+}
 // 查询换脸结果接口
 export default async (req, res) => {
   try {
@@ -18,6 +33,7 @@ export default async (req, res) => {
       },
     });
     if (res.data.status === 'finishing') {
+      updataUserInfo(userId);
       saveImageData(res.data, userId);
     }
     return { data: res.data };
