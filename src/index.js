@@ -17,6 +17,7 @@ import login from './services/user/login/index.js';
 import getAllImages from './services/image/getAllImages/index.js';
 import deleteSelectImages from './services/image/deleteSelectImages/index.js';
 import deleteAllImages from './services/image/deleteAllImages/index.js';
+import updateUserProcessInfo from './services/image/updateUserProcessInfo/index.js';
 import getUserProcessImages from './services/user/getUserProcessImages/index.js';
 import addPoints from './services/user/addPoints/index.js';
 import checkIn from './services/user/checkIn/index.js';
@@ -39,6 +40,7 @@ const routes = [
   ['/uploadImages', uploadImages],
   ['/deleteSelectImages', deleteSelectImages],
   ['/deleteAllImages', deleteAllImages],
+  ['/updateUserProcessInfo', updateUserProcessInfo],
 ];
 
 routes.forEach(([routePath, module]) => {
