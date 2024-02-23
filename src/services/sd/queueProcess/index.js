@@ -35,7 +35,7 @@ export default async (req, res) => {
     // 图片目录
     let imagesDir = path.join(
       projectRoot,
-      'sd_make_images',
+      'static/sd_make_images',
       new Date().toISOString().slice(0, 10)
     );
     imagesDir = path.join(imagesDir, userId);

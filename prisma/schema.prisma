@@ -46,18 +46,36 @@ model ImageIndex {
 }
 model ImageUserUpload {
   userId           String   // 用户的id
-  id               Int      @id @default(autoincrement())
+  momentId        String      @id @default(autoincrement())
   imageUrl        String?
   userPicPath      String?
   data            String?
   contentType    String?   // base64
-  description      String?
+
   category         String?  // 图像分类
-  tags             String?  // 图像标签
+  tagName             String?  // 图像标签
   createdAt        DateTime @default(now())
   likesCount       Int     @default(0)
-}
 
+  userLikeStatus  Boolean?  @default(false)
+  momentPics      String[]  // 朋友圈图片，使用字符串数组存储图片链接
+  momentText            String    // 朋友圈文案
+  momentTitle           String    // 朋友圈文案标题
+  viewCount       Int       @default(0) // 查看数量，默认为0
+}
+model MomentsUser {
+  userId          String
+  momentId        String
+  createdAt       DateTime  @default(now())
+  tagName         String    // 类别
+  likesCount      Int       @default(0) // 点赞量，默认为0
+  likesUser       String[]  // 点赞的用户，使用字符串数组存储用户ID
+  userLikeStatus  Boolean?  @default(false)
+  momentPics      String[]  // 朋友圈图片，使用字符串数组存储图片链接
+  momentText            String    // 朋友圈文案
+  momentTitle           String    // 朋友圈文案标题
+  viewCount       Int       @default(0) // 查看数量，默认为0
+}
 // model ImageTag {
 //   id         Int      @id @default(autoincrement())
 //   tagName    String

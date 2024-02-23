@@ -45,7 +45,7 @@ export default async (req, res) => {
   }
 };
 
-const uploadDirectory = projectRoot + '/sd_make_images/'; // 定义绝对路径
+const uploadDirectory = projectRoot + '/static/sd_make_images/'; // 定义绝对路径
 
 // 如果目录不存在，则创建目录
 if (!fs.existsSync(uploadDirectory)) {
@@ -54,10 +54,10 @@ if (!fs.existsSync(uploadDirectory)) {
 
 const saveImageData = async (requestData, user_id) => {
   try {
-    const outputImagePath = requestData.result?.images?.[0]; // 获取结果图片路径
+    const outputImageBase64 = requestData.result?.images?.[0]; // 获取结果图片base64
 
     // 如果结果图片路径存在，则保存文件到本地
-    if (outputImagePath) {
+    if (outputImageBase64) {
       const fileName = `${requestData.request_id}.png`; // 文件名，可根据需要调整
       console.log('userid', user_id);
       let filePath = path.join(
@@ -71,7 +71,7 @@ const saveImageData = async (requestData, user_id) => {
       filePath = path.join(filePath, fileName);
 
       // 将 base64 数据写入文件
-      fs.writeFileSync(filePath, outputImagePath, { encoding: 'base64' });
+      fs.writeFileSync(filePath, outputImageBase64, { encoding: 'base64' });
 
       console.log(`Image saved at: ${filePath}`);
       // 将文件路径保存到数据库
