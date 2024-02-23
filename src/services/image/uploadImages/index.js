@@ -1,14 +1,24 @@
 import prisma from '../../../db/prisma.js';
 import fs from 'fs';
 import path from 'path';
+import { projectRoot } from '../../../common/path.js';
 
-const uploadDirectory = '/home/ubuntu/code/server/uploads'; // 定义绝对路径
+const uploadDirectory = projectRoot + '/uploads'; // 定义绝对路径
 
 // 如果目录不存在，则创建目录
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
 
+function generateUniqueMomentId() {
+  // 使用时间戳作为基础
+  let momentId = Date.now().toString(36);
+
+  // 添加随机数以确保唯一性
+  momentId += Math.random().toString(36).substr(2, 5);
+
+  return momentId;
+}
 export default async (req) => {
   try {
     // const { userId, image, tagName, description } = req.body;
@@ -19,8 +29,7 @@ export default async (req) => {
       !momentPics ||
       !Array.isArray(momentPics) ||
       !tagName ||
-      !momentTitle ||
-      !momentText
+      !momentTitle
     ) {
       throw new Error(
         'Missing required parameters or momentPics is not an array'

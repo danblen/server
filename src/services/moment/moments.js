@@ -1,6 +1,7 @@
 // moments.js
 
 import prisma from '../../../db/prisma.js';
+import { projectRoot } from '../../common/path.js';
 
 function generateUniqueMomentId() {
   // 使用时间戳作为基础
@@ -14,7 +15,7 @@ function generateUniqueMomentId() {
 const fs = require('fs');
 const path = require('path');
 
-const uploadDirectory = '/home/ubuntu/code/server/uploads'; // 定义绝对路径
+const uploadDirectory = projectRoot + '/uploads'; // 定义绝对路径
 
 // 如果目录不存在，则创建目录
 if (!fs.existsSync(uploadDirectory)) {

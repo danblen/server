@@ -1,7 +1,8 @@
 import path from 'path';
 import fs from 'fs';
+import { projectRoot } from '../../../common/path.js';
 
-const staticDirectory = '/home/ubuntu/code/server/static/';
+const staticDirectory = projectRoot + '/static/';
 
 export default (req, res) => {
   const targetDirectory = path.join(staticDirectory, 'allImages');
