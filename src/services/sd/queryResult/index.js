@@ -34,9 +34,11 @@ export default async (req, res) => {
     });
     if (res.data.status === 'finishing') {
       updataUserInfo(userId);
-      saveImageData(res.data, userId);
+      const { fullPath, relativePath } = getPathAndMakeDir(requestId, userId);
+      saveImageData(res.data, userId, fullPath);
+      return { data: { status: res.data.status, imageUrl: relativePath } };
     }
-    return { data: res.data };
+    return { data: { status: res.data.status, imageUrl: '' } };
   } catch (error) {
     console.error('Error querying data from SQL:', error.message);
     return { data: error.message };
@@ -51,36 +53,38 @@ const uploadDirectory = projectRoot + '/static/sd_make_images/'; // 定义绝对
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
-
-const saveImageData = async (requestData, user_id) => {
+const getPathAndMakeDir = (request_id, user_id) => {
+  const fileName = `${request_id}.png`; // 文件名，可根据需要调整
+  let relativeDir = path.join(
+    '/static/sd_make_images',
+    user_id,
+    format(new Date(), 'yyyy-MM-dd')
+  );
+  let fullPathDir = projectRoot + relativeDir;
+  if (!fs.existsSync(fullPathDir)) {
+    fs.mkdirSync(fullPathDir, { recursive: true });
+  }
+  let relativePath = relativeDir + fileName;
+  let fullPath = path.join(projectRoot, relativePath); // 构建文件的绝对路径
+  return { fullPath, relativePath };
+};
+const saveImageData = async (requestData, user_id, fullPath) => {
   try {
     const outputImageBase64 = requestData.result?.images?.[0]; // 获取结果图片base64
 
     // 如果结果图片路径存在，则保存文件到本地
     if (outputImageBase64) {
-      const fileName = `${requestData.request_id}.png`; // 文件名，可根据需要调整
-      console.log('userid', user_id);
-      let filePath = path.join(
-        path.join(uploadDirectory, user_id),
-        format(new Date(), 'yyyy-MM-dd')
-      ); // 构建文件的绝对路径
-
-      if (!fs.existsSync(filePath)) {
-        fs.mkdirSync(filePath, { recursive: true });
-      }
-      filePath = path.join(filePath, fileName);
-
       // 将 base64 数据写入文件
-      fs.writeFileSync(filePath, outputImageBase64, { encoding: 'base64' });
+      fs.writeFileSync(fullPath, outputImageBase64, { encoding: 'base64' });
 
-      console.log(`Image saved at: ${filePath}`);
+      console.log(`Image saved at: ${fullPath}`);
       // 将文件路径保存到数据库
       await prisma.userProcessImageData.update({
         where: {
           requestId: requestData.request_id,
         },
         data: {
-          outputImagePath: filePath, // 将文件路径保存到数据库
+          outputImagePath: fullPath, // 将文件路径保存到数据库
           requestStatus: 'finishing',
         },
       });
