@@ -34,6 +34,7 @@ model UserProcessImageData {
   requestId         String   @id @unique // 在 Prisma 使用 @id 和 @unique 指令表示主键和唯一约束
   requestStatus     String?  @default("no-data")
   userLikeStatus    Int?     @default(0)
+  usePoint          Int?     @default(1) //转换所需积分
 }
 
 model ImageIndex {

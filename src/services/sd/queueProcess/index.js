@@ -17,15 +17,32 @@ async function ensureDirectoryExists(directory) {
 }
 // 换脸接口
 export default async (req, res) => {
-  const { userId } = req.body;
+  const { userId, momentId, usePoint } = req.body;
   if (!userId) {
     return;
   }
   const user = await prisma.user.findUnique({
     where: { userId },
   });
-  if (user.points < 1) {
+  if (user.points < usePoint) {
     return { error: 'no points' };
+  }
+  // 用户A使用用户B的模板，用户B可以加积分
+  const moment = await prisma.ImageUserUpload.findUnique({
+    where: { momentId },
+  });
+  // 用户使用自己的模板，不能给自己加积分
+  if (moment.userId != userId) {
+    await prisma.user.update({
+      where: {
+        userId: moment.userId,
+      },
+      data: {
+        points: {
+          increment: 1,
+        },
+      },
+    });
   }
   const gpuRes = await forwardToGPU(req.body);
   // 调用成功
@@ -49,7 +66,7 @@ export default async (req, res) => {
       imagesDir
     );
     // 保存图片路径到数据库
-    updateUserImage(userId, requestId, mainImagePath, roopImagePath);
+    updateUserImage(userId, requestId, mainImagePath, roopImagePath, usePoint);
     // 积分需要减1
     // updataUserInfo(userId);
     return {
@@ -97,7 +114,8 @@ async function updateUserImage(
   userId,
   requestId,
   mainImagePath,
-  roopImagePath
+  roopImagePath,
+  usePoint
 ) {
   try {
     // 新建一条换脸任务的数据，保存数据到数据库
@@ -109,6 +127,7 @@ async function updateUserImage(
         requestStatus: 'pending',
         mainImagePath: mainImagePath || null,
         roopImagePath: roopImagePath || null,
+        usePoint: usePoint,
       },
     });
   } catch (error) {
