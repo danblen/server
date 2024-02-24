@@ -9,7 +9,11 @@ import path from 'path';
 import { CloudBaseRunServer } from './server.js';
 import getBanners from './services/image/getBanners/index.js';
 import storeImages from './services/image/storeImages/index.js';
-import uploadImages from './services/image/uploadImages/index.js';
+import {
+  uploadImages,
+  getTagImages,
+  updateImageUserUploadInfo,
+} from './services/image/uploadImages/index.js';
 import queryResult from './services/sd/queryResult/index.js';
 import queueProcess from './services/sd/queueProcess/index.js';
 import getUserInfo from './services/user/getUserInfo/index.js';
@@ -38,6 +42,8 @@ const routes = [
   ['/queryResult', queryResult],
   ['/queueProcess', queueProcess],
   ['/uploadImages', uploadImages],
+  ['/getTagImages', getTagImages],
+  ['/updateImageUserUploadInfo', updateImageUserUploadInfo],
   ['/deleteSelectImages', deleteSelectImages],
   ['/deleteAllImages', deleteAllImages],
   ['/updateUserProcessInfo', updateUserProcessInfo],

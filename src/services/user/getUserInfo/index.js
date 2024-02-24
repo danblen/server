@@ -30,9 +30,17 @@ export default async (req, res) => {
           isChecked: false,
         },
       });
+      userSql.userHeadPic = userSql.userHeadPic.replace(
+        '/home/ubuntu/code/server/static/',
+        'https://facei.top/static/'
+      );
       return { data: userSql };
     }
 
+    user.userHeadPic = user.userHeadPic.replace(
+      '/home/ubuntu/code/server/static/',
+      'https://facei.top/static/'
+    );
     return { data: user };
   }
 };

@@ -17,7 +17,7 @@ export default async (req, res) => {
   const lastCheckInDate = DateTime.fromISO(user.lastCheckIn);
   // 如果上次签到日期不是今天，则进行签到
   if (!lastCheckInDate.hasSame(today, 'day')) {
-    const updatedUser = await prisma.user.update({
+    let updatedUser = await prisma.user.update({
       where: {
         userId,
       },
@@ -29,6 +29,10 @@ export default async (req, res) => {
         lastCheckIn: today, // 更新上次签到日期
       },
     });
+    updatedUser.userHeadPic = updatedUser.userHeadPic.replace(
+      '/home/ubuntu/code/server/static/',
+      'https://facei.top/static/'
+    );
     return { data: updatedUser };
   } else {
     return { data: null }; // 今天已经签到过了

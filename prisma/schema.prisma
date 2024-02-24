@@ -10,6 +10,8 @@ datasource db {
 model User {
   id            Int       @id @default(autoincrement())
   userId        String    @unique // 用户的id
+  userName      String?
+  userHeadPic   String?
   points        Int?      @default(0) // 用户的积分
   isChecked     Boolean?  @default(false) // 当天是否签到
   lastCheckIn   String?
@@ -18,7 +20,7 @@ model User {
   updatedAt     String?  // 用户数据更新的时间
   lastLoginAt   String?   // 用户上一次登陆的时间
 }
-
+// 用户图像转换表
 model UserProcessImageData {
   userId            String // 用户的id
   mainImagePath     String?
@@ -44,37 +46,23 @@ model ImageIndex {
   createdAt        String?
   likesCount       Int     @default(0)
 }
+
+// 用户发布动态表
 model ImageUserUpload {
-  userId           String   // 用户的id
-  momentId        String      @id @default(autoincrement())
-  imageUrl        String?
-  userPicPath      String?
-  data            String?
-  contentType    String?   // base64
-
-  category         String?  // 图像分类
-  tagName             String?  // 图像标签
-  createdAt        DateTime @default(now())
-  likesCount       Int     @default(0)
-
-  userLikeStatus  Boolean?  @default(false)
-  momentPics      String[]  // 朋友圈图片，使用字符串数组存储图片链接
-  momentText            String    // 朋友圈文案
-  momentTitle           String    // 朋友圈文案标题
-  viewCount       Int       @default(0) // 查看数量，默认为0
-}
-model MomentsUser {
-  userId          String
-  momentId        String
-  createdAt       DateTime  @default(now())
-  tagName         String    // 类别
-  likesCount      Int       @default(0) // 点赞量，默认为0
-  likesUser       String[]  // 点赞的用户，使用字符串数组存储用户ID
-  userLikeStatus  Boolean?  @default(false)
-  momentPics      String[]  // 朋友圈图片，使用字符串数组存储图片链接
-  momentText            String    // 朋友圈文案
-  momentTitle           String    // 朋友圈文案标题
-  viewCount       Int       @default(0) // 查看数量，默认为0
+  userId           String    @map("userId") // 映射到 User 表的 userId 字段
+  userName         String?   @map("userName") // 映射到 User 表的 userName 字段
+  userHeadPic      String?   @map("userHeadPic") // 映射到 User 表的 userHeadPic 字段
+  momentId         String    @unique  
+  momentText       String    // 朋友圈文案
+  momentTitle      String    // 朋友圈文案标题
+  momentPics       String    // 以逗号分隔的图片 URL 字符串
+  viewCount        Int       @default(0) // 查看数量，默认为0
+  createdAt        String?
+  likesCount       Int       @default(0)
+  userLikeStatus   Boolean?  @default(false)
+  isChecked        Boolean?  @default(false) //是否经过审核
+  category         String?   // 图像分类
+  tagName          String?   // 图像标签
 }
 // model ImageTag {
 //   id         Int      @id @default(autoincrement())
