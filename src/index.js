@@ -49,8 +49,11 @@ const routes = [
   ['/updateUserProcessInfo', updateUserProcessInfo],
 ];
 
+const product = '/v1';
+const test = '/test';
+export const apiType = product;
 routes.forEach(([routePath, module]) => {
-  server.setRoute('post', '/v1' + routePath, module);
+  server.setRoute('post', apiType + routePath, module);
 });
 // server.setRoute('get', '/v1' + 'getAllImages', getAllImages);
 
@@ -75,4 +78,4 @@ routes.forEach(([routePath, module]) => {
 // });
 
 // 监听端口
-server.listen(8081);
+server.listen(8082);
