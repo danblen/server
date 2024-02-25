@@ -48,7 +48,7 @@ export default async (req, res) => {
 };
 
 const uploadDirectory = projectRoot + '/static/sd_make_images/'; // 定义绝对路径
-
+const staticDirectory = projectRoot + '/static';
 // 如果目录不存在，则创建目录
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
@@ -56,16 +56,16 @@ if (!fs.existsSync(uploadDirectory)) {
 const getPathAndMakeDir = (request_id, user_id) => {
   const fileName = `${request_id}.png`; // 文件名，可根据需要调整
   let relativeDir = path.join(
-    '/static/sd_make_images',
+    '/sd_make_images',
     user_id,
     format(new Date(), 'yyyy-MM-dd')
   );
-  let fullPathDir = projectRoot + relativeDir;
+  let fullPathDir = staticDirectory + relativeDir;
   if (!fs.existsSync(fullPathDir)) {
     fs.mkdirSync(fullPathDir, { recursive: true });
   }
   let relativePath = relativeDir + fileName;
-  let fullPath = path.join(projectRoot, relativePath); // 构建文件的绝对路径
+  let fullPath = path.join(staticDirectory, relativePath); // 构建文件的绝对路径
   return { fullPath, relativePath };
 };
 const saveImageData = async (requestData, user_id, fullPath) => {
