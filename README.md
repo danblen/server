@@ -11,6 +11,7 @@ npm i -g yarn
 yarn
 
 ### 启动后台服务：
+启动项目首先要添加.env 文件
 
 yarn dev
 
