@@ -37,7 +37,7 @@ export default async (req, res) => {
       },
     });
     if (res.data.status === 'finishing') {
-      updataUserInfo(userId);
+      updataUserInfo(userId, requestId);
       const { fullPath, relativePath } = getPathAndMakeDir(requestId, userId);
       saveImageData(res.data, userId, fullPath);
       return { data: { status: res.data.status, imageUrl: relativePath } };

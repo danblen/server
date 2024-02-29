@@ -43,9 +43,9 @@ export async function uploadImages(req) {
     //       momentId: user.momentId,
     //     },
     //     data: {
-    //       // momentPics: user.momentPics.replace('/uploads/', '/static/uploads/'),
+    //       momentPics: user.momentPics.replace('.png', '.jpg'),
     //       // viewCount: Math.floor(Math.random() * 500) + 1,
-    //       isChecked: true,
+    //       // isChecked: true,
     //     },
     //   });
     // }

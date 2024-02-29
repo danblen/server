@@ -25,7 +25,7 @@ async function createUser(openid, curDate) {
     const newUser = await prisma.user.create({
       data: {
         userId: openid,
-        points: 10,
+        points: 200,
         isChecked: false,
         createdAt: curDate,
         userName: openid,

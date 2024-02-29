@@ -1,10 +1,11 @@
 import axios from 'axios';
+import { GPU_HOST } from '../../../config/index.js';
 
 // 调用sd接口，进行换脸
 export default async (data) => {
 	try {
 		let response = await axios.post(
-			`http://lyg.blockelite.cn:22164/sdapi/v1/queue-process`,
+			`${GPU_HOST}/sdapi/v1/queue-process`,
 			data
 		);
 		return { data: response.data };
