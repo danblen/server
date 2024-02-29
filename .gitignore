@@ -5,3 +5,5 @@ static
 .png
 sd_make_images
 appdb.sqlite
+uploads
+.env
