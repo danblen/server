@@ -7,6 +7,7 @@ const FORBIDDEN_CODE = 403;
 export const SERVER_HOST = process.env.SERVER_HOST;
 export const GPU_HOST = process.env.GPU_HOST;
 
+export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 /**
  * 对象存储域名
  * @type {string}

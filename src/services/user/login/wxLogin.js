@@ -6,6 +6,8 @@ import { format } from 'date-fns';
 import { projectRoot } from '../../../common/path.js';
 import fs from 'fs';
 import path from 'path';
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET_KEY } from '../../../config/index.js';
 const uploadDirectory = projectRoot + '/static/pic';
 async function createUser(openid, curDate) {
   // 指定目录路径
@@ -57,6 +59,12 @@ async function createUser(openid, curDate) {
     return null;
   }
 }
+
+const generateToken = (openid) => {
+  // 生成 JWT Token
+  const token = jwt.sign({ openid }, JWT_SECRET_KEY, { expiresIn: '1h' });
+  return token;
+};
 // 微信登陆接口
 export default async (reqBody, res) => {
   try {
@@ -80,6 +88,10 @@ export default async (reqBody, res) => {
         data: null,
       };
     }
+    let token;
+    try {
+      token = generateToken(openid);
+    } catch (error) {}
     // 从user表查询用户信息，使用userid查询，结果应唯一
     const user = await prisma.user.findUnique({
       where: {
@@ -103,7 +115,9 @@ export default async (reqBody, res) => {
         userId: newUser.userId,
         points: newUser.points,
         isChecked: newUser.isChecked,
+        level: newUser.level,
         userHeadPic: updatedMomentPics,
+        token
       };
       const responseData = { code: 200, data: userInfo };
       return responseData;
@@ -117,7 +131,6 @@ export default async (reqBody, res) => {
           lastLoginAt: curDate,
         },
       });
-
       const updatedMomentPics = user.userHeadPic.replace(
         '/home/ubuntu/code/server/static/',
         'https://facei.top/static/'
@@ -126,6 +139,8 @@ export default async (reqBody, res) => {
         userId: user.userId,
         points: user.points,
         isChecked: user.isChecked,
+        level: user.level,
+        token,
         userHeadPic: updatedMomentPics,
       };
       return { code: 200, data: userInfo };

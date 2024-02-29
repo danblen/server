@@ -40,7 +40,7 @@ const routes = [
   ['/checkIn', checkIn],
   ['/getUserProcessImage', getUserProcessImages],
   ['/queryResult', queryResult],
-  ['/queueProcess', queueProcess],
+  // ['/queueProcess', queueProcess],
   ['/uploadImages', uploadImages],
   ['/getTagImages', getTagImages],
   ['/updateImageUserUploadInfo', updateImageUserUploadInfo],
@@ -55,6 +55,7 @@ export const apiType = product;
 routes.forEach(([routePath, module]) => {
   server.setRoute('post', apiType + routePath, module);
 });
+server.setRoute('post', apiType + '/queueProcess', queueProcess);
 // server.setRoute('get', '/v1' + 'getAllImages', getAllImages);
 
 // // 设置存储图片的目录
