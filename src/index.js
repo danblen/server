@@ -25,6 +25,8 @@ import updateUserProcessInfo from './services/image/updateUserProcessInfo/index.
 import getUserProcessImages from './services/user/getUserProcessImages/index.js';
 import addPoints from './services/user/addPoints/index.js';
 import checkIn from './services/user/checkIn/index.js';
+import { SERVER_PORT } from './config/index.js';
+import { authenticateToken } from './middleware/auth.js';
 
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
@@ -40,7 +42,7 @@ const routes = [
   ['/checkIn', checkIn],
   ['/getUserProcessImage', getUserProcessImages],
   ['/queryResult', queryResult],
-  // ['/queueProcess', queueProcess],
+  ['/queueProcess', queueProcess],
   ['/uploadImages', uploadImages],
   ['/getTagImages', getTagImages],
   ['/updateImageUserUploadInfo', updateImageUserUploadInfo],
@@ -49,13 +51,11 @@ const routes = [
   ['/updateUserProcessInfo', updateUserProcessInfo],
 ];
 
-const product = '/v1';
-const test = '/test';
-export const apiType = product;
-routes.forEach(([routePath, module]) => {
-  server.setRoute('post', apiType + routePath, module);
+// export const apiType = '/v1';
+export const apiType = '/test';
+routes.forEach(([routePath, module, middleware]) => {
+  server.setRoute('post', apiType + routePath, module, middleware);
 });
-server.setRoute('post', apiType + '/queueProcess', queueProcess);
 // server.setRoute('get', '/v1' + 'getAllImages', getAllImages);
 
 // // 设置存储图片的目录
@@ -79,4 +79,4 @@ server.setRoute('post', apiType + '/queueProcess', queueProcess);
 // });
 
 // 监听端口
-server.listen(8082);
+server.listen(SERVER_PORT);

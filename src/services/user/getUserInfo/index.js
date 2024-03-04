@@ -1,18 +1,21 @@
 import { DateTime } from 'luxon';
 import prisma from '../../../db/prisma.js';
+import { STATIC_DIR } from '../../../common/path.js';
 
 export default async (req, res) => {
+  const { userId } = req.body;
   const user = await prisma.user.findUnique({
     where: {
-      userId: req.body.userId,
+      userId,
     },
   });
   //打开此处，修改所有用户积分
-  // await prisma.user.updateMany({
-  //   data: {
-  //     points: 500,
-  //   },
-  // });
+  //  let a= await prisma.user.delete({
+  //     where: {
+  //       userId
+  //     },
+  //   });
+  //   return {a}
   if (!user) {
     return { data: null };
   } else {
@@ -24,23 +27,40 @@ export default async (req, res) => {
       let userSql;
       userSql = await prisma.user.update({
         where: {
-          userId: user.userId,
+          userId: userId,
         },
         data: {
           isChecked: false,
         },
       });
       userSql.userHeadPic = userSql.userHeadPic.replace(
-        '/home/ubuntu/code/server/static/',
-        'https://facei.top/static/'
+        STATIC_DIR,
+        'https://facei.top/static'
       );
-      return { data: userSql };
+
+      return {
+        data: {
+          userId: userSql.userId,
+          points: userSql.points,
+          isChecked: userSql.isChecked,
+          level: userSql.level,
+          userHeadPic: userSql.userHeadPic,
+        },
+      };
     }
 
     user.userHeadPic = user.userHeadPic.replace(
-      '/home/ubuntu/code/server/static/',
-      'https://facei.top/static/'
+      STATIC_DIR,
+      'https://facei.top/static'
     );
-    return { data: user };
+    return {
+      data: {
+        userId: user.userId,
+        points: user.points,
+        isChecked: user.isChecked,
+        level: user.level,
+        userHeadPic: user.userHeadPic,
+      },
+    };
   }
 };

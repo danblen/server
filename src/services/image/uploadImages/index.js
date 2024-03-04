@@ -2,7 +2,7 @@ import prisma from '../../../db/prisma.js';
 import fs from 'fs';
 import path from 'path';
 import { DateTime } from 'luxon';
-import { projectRoot } from '../../../common/path.js';
+import { STATIC_DIR, projectRoot } from '../../../common/path.js';
 
 const uploadDirectory = projectRoot + '/static/uploads'; // 定义绝对路径
 
@@ -141,13 +141,13 @@ export async function getTagImages(req) {
     const updatedTagPics = tagPics.map((pic) => {
       // 将 momentPics 中的本地路径替换为绝对路径
       const updatedMomentPics = pic.momentPics.replace(
-        '/home/ubuntu/code/server/static/uploads/',
-        'https://facei.top/static/uploads/'
+        STATIC_DIR,
+        'https://facei.top/static'
       );
 
       const updatedHeadPic = pic.userHeadPic.replace(
-        '/home/ubuntu/code/server/static/',
-        'https://facei.top/static/'
+        STATIC_DIR,
+        'https://facei.top/static'
       );
 
       // 返回更新后的记录

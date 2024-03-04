@@ -12,3 +12,4 @@ const currentModuleDir = dirname(currentModuleFilePath);
 
 // 定义项目根目录为当前模块的上两级目录
 export const projectRoot = path.resolve(currentModuleDir, '../../');
+export const STATIC_DIR = projectRoot + '/static';

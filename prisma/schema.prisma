@@ -10,6 +10,7 @@ datasource db {
 model User {
   id            Int       @id @default(autoincrement())
   userId        String    @unique // 用户的id
+  openid        String?    @unique // 用户的wx openid
   userName      String?
   userHeadPic   String?
   points        Int?      @default(0) // 用户的积分
@@ -23,6 +24,7 @@ model User {
 // 用户图像转换表
 model UserProcessImageData {
   userId            String // 用户的id
+  openid        String?     // 用户的wx openid
   mainImagePath     String?
   roopImagePath     String?
   img2imgreqData    String?// 存储JSON格式的img2imgreq数据，在 Prisma 使用 String 表示 JSON

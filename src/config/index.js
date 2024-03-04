@@ -5,6 +5,7 @@ const FORBIDDEN_CODE = 403;
  * @type {string}
  */
 export const SERVER_HOST = process.env.SERVER_HOST;
+export const SERVER_PORT = process.env.SERVER_PORT;
 export const GPU_HOST = process.env.GPU_HOST;
 
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
