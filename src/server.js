@@ -4,6 +4,7 @@ import expressSession from 'express-session';
 import redis from 'redis';
 import MyError from './exceptions/index.js';
 import connectRedis from 'connect-redis';
+import { log } from './middleware/log.js';
 
 // 请求大小限制
 const requestLimit = '5120kb';
@@ -18,6 +19,7 @@ class CloudBaseRunServer {
       bodyParser.urlencoded({ extended: false, limit: requestLimit })
     );
     this.server.use(bodyParser.json({ limit: requestLimit }));
+    this.server.use(log);
     this.server.set('x-powered-by', false);
     this.server.all('*', (req, res, next) => {
       // google需要配置，否则报错cors error
