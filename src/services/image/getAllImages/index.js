@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import { projectRoot } from '../../../common/path.js';
+import { SERVER_HOST } from '../../../config/index.js';
 
 const staticDirectory = projectRoot + '/static/';
 
@@ -25,7 +26,7 @@ export default (req, res) => {
           if (fs.lstatSync(categoryPath).isDirectory()) {
             fs.readdirSync(categoryPath).forEach((image) => {
               if (image.toLowerCase().match(/\.(png|jpg|jpeg|gif|bmp)$/)) {
-                const imagePath = `https://facei.top/static/allImages/albums/${person}/${category}/${image}`;
+                const imagePath = `${SERVER_HOST}/static/allImages/albums/${person}/${category}/${image}`;
                 if (category === 'index') {
                   personObject.index = imagePath;
                 } else if (category === 'urls') {

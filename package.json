@@ -5,10 +5,10 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js",
+    "dev": "cross-env NODE_ENV=dev nodemon src/index.js",
     "start": "cross-env NODE_ENV=production node src/index.js ",
-    "devLocal": "cross-env NODE_ENV=local node src/index.js",
-    "test": "cross-env NODE_ENV=development nodemon src/index.js",
+    "local": "cross-env NODE_ENV=local node src/index.js",
+    "test": "cross-env NODE_ENV=test nodemon src/index.js",
     "tsc": "tsc -p tsconfig.json"
   },
   "dependencies": {
