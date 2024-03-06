@@ -1,7 +1,7 @@
 // moments.js
 
 import prisma from '../../../db/prisma.js';
-import { projectRoot } from '../../common/path.js';
+import { projectRoot } from '../../config/index.js';
 
 function generateUniqueMomentId() {
   // 使用时间戳作为基础

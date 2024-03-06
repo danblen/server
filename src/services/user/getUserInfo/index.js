@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import prisma from '../../../db/prisma.js';
-import { STATIC_DIR } from '../../../common/path.js';
+import { STATIC_DIR } from '../../../config/index.js';
 
 export default async (req, res) => {
   const { userId } = req.body;

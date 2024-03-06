@@ -2,7 +2,7 @@ import fs from 'fs/promises'; // 使用 promises 风格的 fs 模块
 import path from 'path';
 import prisma from '../../../db/prisma.js';
 import forwardToGPU from './forwardToGPU.js';
-import { projectRoot } from '../../../common/path.js';
+import { projectRoot } from '../../../config/index.js';
 
 // 检查并创建目录的函数
 async function ensureDirectoryExists(directory) {
@@ -27,23 +27,27 @@ export default async (req, res) => {
   if (user.points < usePoint) {
     return { error: 'no points' };
   }
-  // 用户A使用用户B的模板，用户B可以加积分
-  const moment = await prisma.ImageUserUpload.findUnique({
-    where: { momentId },
-  });
-  // 用户使用自己的模板，不能给自己加积分
-  if (moment.userId != userId) {
-    await prisma.user.update({
-      where: {
-        userId: moment.userId,
-      },
-      data: {
-        points: {
-          increment: 1,
-        },
-      },
-    });
-  }
+  // 用户A使用用户B的模板，用户B可以加积分-没有录入 sql 的图片会出现错误，暂时先注释
+  // if (momentId) {
+  //   const moment = await prisma.ImageUserUpload.findUnique({
+  //     where: { momentId },
+  //   });
+
+  //   console.log('123', moment);
+  //   // 发布模板的用户，其模板被使用可以加积分，使用自己的模板，不能给自己加积分
+  //   if (moment.userId != userId) {
+  //     await prisma.user.update({
+  //       where: {
+  //         userId: moment.userId,
+  //       },
+  //       data: {
+  //         points: {
+  //           increment: 1,
+  //         },
+  //       },
+  //     });
+  //   }
+  // }
   const gpuRes = await forwardToGPU(req.body);
   // 调用成功
   if (gpuRes?.data) {
@@ -74,7 +78,7 @@ export default async (req, res) => {
     };
   } else {
     // 调用失败直接返回data为null
-    return { code: 'error', data: null };
+    return { error: 'gpu server error' };
   }
 };
 

@@ -3,7 +3,7 @@ import forwardToGPU from './forwardToGPU.js';
 import path from 'path';
 import fs from 'fs';
 import { format } from 'date-fns';
-import { projectRoot } from '../../../common/path.js';
+import { projectRoot } from '../../../config/index.js';
 
 // 积分需要减1
 async function updataUserInfo(userId, requestId) {

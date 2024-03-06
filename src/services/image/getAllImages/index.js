@@ -1,7 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { projectRoot } from '../../../common/path.js';
-import { SERVER_HOST } from '../../../config/index.js';
+import { SERVER_HOST, projectRoot } from '../../../config/index.js';
 
 const staticDirectory = projectRoot + '/static/';
 

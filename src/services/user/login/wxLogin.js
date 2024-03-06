@@ -1,9 +1,9 @@
 import { format } from 'date-fns';
 import fs from 'fs';
 import path from 'path';
-import { STATIC_DIR, projectRoot } from '../../../common/path.js';
 import prisma from '../../../db/prisma.js';
 import { generateToken, generateUserId, getWXOpenId } from './utils.js';
+import { STATIC_DIR, projectRoot } from '../../../config/index.js';
 const uploadDirectory = projectRoot + '/static/pic';
 
 async function createUser(openid, curDate) {

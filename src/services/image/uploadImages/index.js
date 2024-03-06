@@ -2,7 +2,7 @@ import prisma from '../../../db/prisma.js';
 import fs from 'fs';
 import path from 'path';
 import { DateTime } from 'luxon';
-import { STATIC_DIR, projectRoot } from '../../../common/path.js';
+import { STATIC_DIR, projectRoot } from '../../../config/index.js';
 
 const uploadDirectory = projectRoot + '/static/uploads'; // 定义绝对路径
 
