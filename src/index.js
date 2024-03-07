@@ -25,7 +25,7 @@ import updateUserProcessInfo from './services/image/updateUserProcessInfo/index.
 import getUserProcessImages from './services/user/getUserProcessImages/index.js';
 import addPoints from './services/user/addPoints/index.js';
 import checkIn from './services/user/checkIn/index.js';
-import { SERVER_PORT } from './config/index.js';
+import { ENV } from './config/index.js';
 import { authenticateToken } from './middleware/auth.js';
 
 // 创建云托管 Server 实例
@@ -51,10 +51,8 @@ const routes = [
   ['/updateUserProcessInfo', updateUserProcessInfo],
 ];
 
-// export const apiType = '/v1';
-export const apiType = '/test';
 routes.forEach(([routePath, module, middleware]) => {
-  server.setRoute('post', apiType + routePath, module, middleware);
+  server.setRoute('post', ENV.API_TYPE + routePath, module, middleware);
 });
 // server.setRoute('get', '/v1' + 'getAllImages', getAllImages);
 
@@ -79,4 +77,4 @@ routes.forEach(([routePath, module, middleware]) => {
 // });
 
 // 监听端口
-server.listen(SERVER_PORT);
+server.listen(ENV.SERVER_PORT);

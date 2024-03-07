@@ -14,11 +14,29 @@ const currentModuleDir = dirname(currentModuleFilePath);
 export const projectRoot = path.resolve(currentModuleDir, '../../');
 export const STATIC_DIR = projectRoot + '/static';
 
+const ENV_MAP = {
+  production: {
+    SERVER_HOST: process.env.SERVER_HOST,
+    SERVER_PORT: process.env.SERVER_PORT,
+    API_TYPE: process.env.API_TYPE,
+    URL_STATIC: process.env.URL_STATIC,
+    GPU_HOST: process.env.GPU_HOST,
+  },
+  test: {
+    SERVER_HOST: process.env.SERVER_HOST,
+    SERVER_PORT: process.env.SERVER_PORT_TEST,
+    API_TYPE: process.env.API_TYPE_TEST,
+    URL_STATIC: process.env.URL_STATIC_TEST,
+    GPU_HOST: process.env.GPU_HOST,
+  },
+  dev: {},
+};
+export const ENV = ENV_MAP[process.env.NODE_ENV];
+
 export const SERVER_HOST = process.env.SERVER_HOST;
-export const SERVER_PORT =
-  process.env.NODE_ENV === 'development'
-    ? process.env.SERVER_PORT
-    : process.env.SERVER_PORT;
+export const SERVER_PORT = process.env.SERVER_PORT;
+export const API_TYPE = process.env.API_TYPE;
+export const URL_STATIC = process.env.SERVER_HOST_STATIC;
 export const GPU_HOST = process.env.GPU_HOST;
 
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
