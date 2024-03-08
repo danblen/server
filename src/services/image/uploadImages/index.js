@@ -15,48 +15,54 @@ function generateUniqueMomentId() {
 
   return momentId;
 }
+// 删除用户所有动态
+export async function deleteUploadImagesOnUserId(req) {
+  const { userId } = req.body;
+
+  const usersToUpdate = await prisma.imageUserUpload.findMany({
+    where: {
+      userId: userId,
+    },
+  });
+  const deleteResult = await prisma.imageUserUpload.deleteMany({
+    where: {
+      momentId: usersToUpdate.momentId,
+    },
+  });
+  return { data: 'delete success' };
+}
+
+// 更新整个表的某个属性
+export async function updateAllUploadImages() {
+  const allUsers = await prisma.imageUserUpload.findMany();
+
+  // 遍历所有记录并更新
+  for (const user of allUsers) {
+    // for (const user of usersToUpdate) {
+    const updatedUser = await prisma.imageUserUpload.update({
+      where: {
+        momentId: user.momentId,
+      },
+      data: {
+        // momentPics: user.momentPics.replace('.png', '.jpg'),
+        viewCount: Math.floor(Math.random() * 500) + 1,
+        isChecked: true,
+      },
+    });
+  }
+  return { data: 'success' };
+}
 
 export async function uploadImages(req) {
   try {
     const { userId, tagName, momentPics, momentText, momentTitle } = req.body;
     // console.log(req.body);
-
-    // *************************删除userId动态*************************
-    // const deleteResult = await prisma.imageUserUpload.deleteMany({
-    //   where: {
-    //     userId: userId,
-    //   },
-    // });
-    // ***********************************************************
-
-    // *************************查找userId并更新*************************
-    // const usersToUpdate = await prisma.imageUserUpload.findMany({
-    //   where: {
-    //     userId: userId,
-    //   },
-    // });
-
-    // // // 遍历符合条件的记录数组，并为每个记录执行更新操作
-    // for (const user of usersToUpdate) {
-    //   const updatedUser = await prisma.imageUserUpload.update({
-    //     where: {
-    //       momentId: user.momentId,
-    //     },
-    //     data: {
-    //       momentPics: user.momentPics.replace('.png', '.jpg'),
-    //       // viewCount: Math.floor(Math.random() * 500) + 1,
-    //       // isChecked: true,
-    //     },
-    //   });
-    // }
-    // return { data: 'success' };
-    // ***********************************************************
     if (
       !userId ||
       !momentPics ||
       !Array.isArray(momentPics) ||
-      !tagName ||
-      !momentTitle
+      !tagName
+      // || !momentTitle
     ) {
       throw new Error(
         'Missing required parameters or momentPics is not an array'
@@ -98,6 +104,10 @@ export async function uploadImages(req) {
         userId: userId,
       },
     });
+    if (!user) {
+      console.error('Error find user id:', userId);
+      return { error: error.message };
+    }
     // 保存到数据库
     await prisma.imageUserUpload.create({
       data: {
@@ -127,7 +137,6 @@ export async function uploadImages(req) {
 export async function getTagImages(req) {
   try {
     const { tagName } = req.body;
-    // console.log(req.body);
     if (!tagName) {
       throw new Error('Missing required parameters or tagName is null');
     }

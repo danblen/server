@@ -1,10 +1,12 @@
 # 安装工具
 
-需要先安装 node 16.14 版本以上
+先安装 node 16.14 版本
 
 ### 安装 yarn
 
 npm i -g yarn
+
+npm i -g pm2
 
 ### 安装依赖
 
@@ -12,11 +14,16 @@ yarn
 
 ### 启动后台服务：
 启动项目首先要添加.env 文件
-开发环境启动
+生产环境启动(使用pm2)
+yarn start
+
+开发环境启动（使用nodemon监听文件改动）
 yarn dev
 
-生产环境启动
-yarn start
+测试环境启动（使用nodemon监听文件改动）
+yarn test
+
+
 ### 使用 tmux 启动服务
 
 创建会话

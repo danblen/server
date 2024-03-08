@@ -4,7 +4,7 @@ export default async (req, res) => {
   const { requestId, ...updateData } = req.body;
 
   if (!requestId) {
-    return null;
+    return { data: 'check requestId' };
   }
 
   const processData = await prisma.UserProcessImageData.findUnique({
@@ -14,7 +14,7 @@ export default async (req, res) => {
   });
 
   if (!processData) {
-    return null; // 数据不存在
+    return { data: 'check requestId' }; // 数据不存在
   }
 
   const updatedUser = await prisma.UserProcessImageData.update({

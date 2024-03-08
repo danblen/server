@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=dev nodemon src/index.js",
-    "start": "cross-env NODE_ENV=production nodemon src/index.js",
+    "dev": "cross-env NODE_ENV=production nodemon src/index.js",
+    "start": "cross-env NODE_ENV=production pm2 start src/index.js",
     "local": "cross-env NODE_ENV=local node src/index.js",
     "test": "cross-env NODE_ENV=test nodemon src/index.js",
     "tsc": "tsc -p tsconfig.json"
