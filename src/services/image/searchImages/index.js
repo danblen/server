@@ -1,4 +1,4 @@
-import { elasticClient } from '../../../db/elasticSearch';
+// import { elasticClient } from '../../../db/elasticSearch';
 
 export default async (req) => {
   try {

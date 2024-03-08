@@ -1,4 +1,4 @@
-import { elasticClient } from '../../../db/elasticSearch.js';
+// import { elasticClient } from '../../../db/elasticSearch.js';
 import prisma from '../../../db/prisma.js';
 
 // const imageUrls = [
@@ -26,22 +26,19 @@ import prisma from '../../../db/prisma.js';
 // };
 export default async (req, res) => {
   // const { data, tags } = req.body;
-
-  async function indexImage(imageMetadata) {
-    await elasticClient.index({
-      index: 'images',
-      body: imageMetadata,
-    });
-  }
-
-  // 示例图片元数据
-  const sampleImageMetadata = {
-    filename: 'sample.jpg',
-    path: '/images/sample.jpg',
-    tags: ['nature', 'landscape'],
-    // 其他图片元数据字段
-  };
-
-  indexImage(sampleImageMetadata).catch(console.error);
-  return { code: 'success', data };
+  // async function indexImage(imageMetadata) {
+  //   await elasticClient.index({
+  //     index: 'images',
+  //     body: imageMetadata,
+  //   });
+  // }
+  // // 示例图片元数据
+  // const sampleImageMetadata = {
+  //   filename: 'sample.jpg',
+  //   path: '/images/sample.jpg',
+  //   tags: ['nature', 'landscape'],
+  //   // 其他图片元数据字段
+  // };
+  // indexImage(sampleImageMetadata).catch(console.error);
+  // return { code: 'success', data };
 };
