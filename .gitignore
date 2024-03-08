@@ -5,3 +5,5 @@ yarn-error.log
 appdb.sqlite
 .env
 /logs
+cpu_monitor.log
+nohup.out
