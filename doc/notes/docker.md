@@ -1,3 +1,4 @@
+### 构建镜像
 
 要构建 Docker 镜像，您可以使用以下步骤：
 
@@ -32,7 +33,7 @@ docker run -p 8081:8081 my-node-app
 
 
 
-
+### 启动docker
 Docker 守护进程运行： 确保 Docker 守护进程正在运行。您可以使用以下命令检查 Docker 服务的状态：
 
 sudo systemctl status docker
@@ -48,7 +49,7 @@ ls -l /var/run/docker.sock
 确保输出中包含 docker 组。
 
 
-
+### 添加权限
 1. 将用户添加到 Docker 组
 打开终端并运行以下命令，将当前用户添加到 Docker 组：
 
@@ -79,3 +80,25 @@ docker build -t my-node-app .
 
 sudo docker build -t my-node-app .
 请确保您的用户有足够的权限，以便正常使用 Docker。
+
+### 删除docker镜像
+要删除 Docker 镜像，您可以使用 docker rmi 命令。以下是基本的语法：
+
+docker rmi [OPTIONS] IMAGE [IMAGE...]
+其中，IMAGE 是要删除的镜像的名称或ID。下面是一些常见的用法：
+
+删除单个镜像：
+
+docker rmi image_name_or_id
+删除多个镜像：
+
+docker rmi image1_name_or_id image2_name_or_id ...
+删除所有未使用的镜像：
+
+docker image prune
+上述命令将删除所有未被任何容器引用的镜像。
+
+强制删除镜像，即使有容器正在使用：
+
+docker rmi -f image_name_or_id
+请小心使用 -f 选项，因为它将终止正在运行的容器并删除相关的镜像。
