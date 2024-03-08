@@ -1,12 +1,13 @@
 # 安装工具
 
-先安装 node 16.14 版本
+先安装 node 18.19 版本
 
 ### 安装 yarn
 
 npm i -g yarn
 
-npm i -g pm2
+yarn add -g pm2
+yarn add -g nodemon
 
 ### 安装依赖
 
@@ -23,18 +24,6 @@ yarn dev
 测试环境启动（使用nodemon监听文件改动）
 yarn test
 
-
-### 使用 tmux 启动服务
-
-创建会话
-tmux
-
-在新的 seesion 会话中启动服务
-yarn dev
-
-连接上次 tmux session
-
-tmux attach-session
 
 # 数据库：
 

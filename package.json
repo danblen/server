@@ -5,10 +5,11 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=production nodemon src/index.js",
+    "dev": "cross-env NODE_ENV=dev nodemon src/index.js", 
     "start": "cross-env NODE_ENV=production pm2 start src/index.js",
-    "local": "cross-env NODE_ENV=local node src/index.js",
     "test": "cross-env NODE_ENV=test nodemon src/index.js",
+    "dbpush": "npx prisma db push",
+    "dbgen": "npx prisma generate",
     "tsc": "tsc -p tsconfig.json"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "connect-redis": "^6.0.0",
     "cos-nodejs-sdk-v5": "^2.11.6",
     "date-fns": "^3.3.1",
+    "dotenv": "^16.4.5",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
     "jsonwebtoken": "^9.0.2",

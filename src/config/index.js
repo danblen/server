@@ -1,5 +1,9 @@
 import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
+import dotenv from 'dotenv';
+
+// 加载 .env 文件
+dotenv.config();
 
 // 获取当前模块文件的路径
 const currentModuleFileUrl = import.meta.url;
@@ -29,14 +33,13 @@ const ENV_MAP = {
     URL_STATIC: process.env.URL_STATIC_TEST,
     GPU_HOST: process.env.GPU_HOST,
   },
-  dev: {},
+  dev: {
+    SERVER_HOST: process.env.SERVER_HOST_DEV,
+    SERVER_PORT: process.env.SERVER_PORT_DEV,
+    API_TYPE: process.env.API_TYPE_DEV,
+    URL_STATIC: process.env.URL_STATIC_DEV,
+    GPU_HOST: process.env.GPU_HOST,
+  },
 };
 export const ENV = ENV_MAP[process.env.NODE_ENV];
-
-export const SERVER_HOST = process.env.SERVER_HOST;
-export const SERVER_PORT = process.env.SERVER_PORT;
-export const API_TYPE = process.env.API_TYPE;
-export const URL_STATIC = process.env.SERVER_HOST_STATIC;
-export const GPU_HOST = process.env.GPU_HOST;
-
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
