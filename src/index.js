@@ -11,7 +11,6 @@ import getBanners from './services/image/getBanners/index.js';
 import storeImages from './services/image/storeImages/index.js';
 import {
   uploadImages,
-  getTagImages,
   updateImageUserUploadInfo,
 } from './services/image/uploadImages/index.js';
 import queryResult from './services/sd/queryResult/index.js';
@@ -28,6 +27,7 @@ import checkIn from './services/user/checkIn/index.js';
 import { ENV } from './config/index.js';
 import { authenticateToken } from './middleware/auth.js';
 
+import getTagImages from './services/image/getTagImages/index.js';
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
 
