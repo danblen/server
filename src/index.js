@@ -24,8 +24,12 @@ import updateUserProcessInfo from './services/image/updateUserProcessInfo/index.
 import getUserProcessImages from './services/user/getUserProcessImages/index.js';
 import addPoints from './services/user/addPoints/index.js';
 import checkIn from './services/user/checkIn/index.js';
+import updateUserInfo from './services/user/updateUserInfo/index.js';
 import { ENV } from './config/index.js';
 import { authenticateToken } from './middleware/auth.js';
+import getQRCode from './services/user/getQRCode/index.js';
+import feedback from './services/user/feedback/index.js';
+import uploadLaunchInfo from './services/user/uploadLaunchInfo/index.js';
 
 import getTagImages from './services/image/getTagImages/index.js';
 // 创建云托管 Server 实例
@@ -49,6 +53,10 @@ const routes = [
   ['/deleteSelectImages', deleteSelectImages],
   ['/deleteAllImages', deleteAllImages],
   ['/updateUserProcessInfo', updateUserProcessInfo],
+  ['/updateUserInfo', updateUserInfo],
+  ['/feedback', feedback],
+  ['/uploadLaunchInfo', uploadLaunchInfo],
+  ['/getQRCode', getQRCode],
 ];
 
 routes.forEach(([routePath, module, middleware]) => {

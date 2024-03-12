@@ -45,6 +45,7 @@ export default async (req, res) => {
           isChecked: userSql.isChecked,
           level: userSql.level,
           userHeadPic: userSql.userHeadPic,
+          userHeadPic: userSql.userName,
         },
       };
     }
@@ -60,6 +61,7 @@ export default async (req, res) => {
         isChecked: user.isChecked,
         level: user.level,
         userHeadPic: user.userHeadPic,
+        userName: user.userName,
       },
     };
   }

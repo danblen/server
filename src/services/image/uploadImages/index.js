@@ -15,6 +15,22 @@ function generateUniqueMomentId() {
 
   return momentId;
 }
+
+//删除多个动态
+export async function deleteUploadImagesOnMomentIds(req) {
+  const { momentIds } = req.body; // 从请求体中获取 momentIds
+
+  // 删除与这些动态相关的用户上传图片记录
+  const deleteResult = await prisma.imageUserUpload.deleteMany({
+    where: {
+      momentId: { in: momentIds }, // 使用 "in" 操作符筛选多个 momentId
+    },
+  });
+
+  // 返回删除成功的消息
+  return { data: 'delete success' };
+}
+
 // 删除用户所有动态
 export async function deleteUploadImagesOnUserId(req) {
   const { userId } = req.body;
@@ -45,8 +61,9 @@ export async function updateAllUploadImages() {
       },
       data: {
         // momentPics: user.momentPics.replace('.png', '.jpg'),
-        viewCount: Math.floor(Math.random() * 500) + 1,
+        viewCount: Math.floor(Math.random() * 50) + 1,
         isChecked: true,
+        // userName: '试试就逝世',
       },
     });
   }
@@ -55,10 +72,18 @@ export async function updateAllUploadImages() {
 
 export async function uploadImages(req) {
   try {
-    const { userId, tagName, momentPics, momentText, momentTitle } = req.body;
+    const {
+      userId,
+      tagName,
+      momentPics,
+      momentText,
+      momentTitle,
+      userName,
+      userHeadPic,
+    } = req.body;
     // console.log(req.body);
     if (
-      !userId ||
+      // !userId ||
       !momentPics ||
       !Array.isArray(momentPics) ||
       !tagName
@@ -99,21 +124,37 @@ export async function uploadImages(req) {
     const momentPicsString = imageUrls.join(',');
     const curDate = DateTime.now().setZone('Asia/Shanghai');
 
-    const user = await prisma.user.findUnique({
-      where: {
-        userId: userId,
-      },
-    });
-    if (!user) {
-      console.error('Error find user id:', userId);
-      return { error: error.message };
-    }
+    // const user = await prisma.user.findUnique({
+    //   where: {
+    //     userId: userId,
+    //   },
+    // });
+    // if (!user) {
+    //   console.error('Error find user id:', userId);
+    //   return { error: error.message };
+    // }
     // 保存到数据库
+    function generateRandomString(length) {
+      const characters =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = '';
+      for (let i = 0; i < length; i++) {
+        result += characters.charAt(
+          Math.floor(Math.random() * characters.length)
+        );
+      }
+      return result;
+    }
+
+    // 生成随机userId
+    const randomUserId = 'machine' + generateRandomString(8); // 假设随机字符串长度为8
+
+    console.log('save', userName, userHeadPic);
     await prisma.imageUserUpload.create({
       data: {
-        userId,
-        userName: user.userName,
-        userHeadPic: user.userHeadPic,
+        userId: randomUserId,
+        userName: userName,
+        userHeadPic: userHeadPic,
         momentId,
         momentText: '',
         momentPics: momentPicsString, // 将多个图片的 URL 合并成一个字符串
@@ -133,7 +174,60 @@ export async function uploadImages(req) {
     await prisma.$disconnect();
   }
 }
+export async function getTagImages(req) {
+  try {
+    const { tagName } = req.body;
+    if (!tagName) {
+      throw new Error('Missing required parameters or tagName is null');
+    }
 
+    // 查询数据库并限制结果数量为200个
+    const tagPics = await prisma.imageUserUpload.findMany({
+      where: {
+        tagName: tagName,
+        isChecked: true,
+      },
+      take: 200,
+    });
+
+    // 随机排序并选择前200个元素
+    const shuffledTagPics = tagPics
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 200);
+
+    // 更新路径并返回结果
+    const updatedTagPics = shuffledTagPics.map((pic) => {
+      if (pic.momentPics && pic.userHeadPic) {
+        // 将 momentPics 中的本地路径替换为绝对路径
+        const updatedMomentPics = pic.momentPics.replace(
+          STATIC_DIR,
+          'https://facei.top/static'
+        );
+
+        const updatedHeadPic = pic.userHeadPic.replace(
+          STATIC_DIR,
+          'https://facei.top/static'
+        );
+
+        // 返回更新后的记录
+        return {
+          ...pic,
+          momentPics: updatedMomentPics,
+          userHeadPic: updatedHeadPic,
+        };
+      }
+    });
+
+    return { data: updatedTagPics };
+  } catch (error) {
+    // 处理错误信息
+    console.error('Error saving momentPics to local filesystem:', error);
+    return { error: error.message };
+  } finally {
+    // 关闭数据库连接等操作
+    await prisma.$disconnect();
+  }
+}
 
 export async function updateImageUserUploadInfo(req) {
   const { momentId, ...updateData } = req.body;

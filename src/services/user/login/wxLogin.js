@@ -26,7 +26,7 @@ async function createUser(openid, curDate) {
       data: {
         userId,
         openid,
-        points: 200,
+        points: 20,
         isChecked: false,
         createdAt: curDate,
         userName: userId,
