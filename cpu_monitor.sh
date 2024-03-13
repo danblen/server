@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# nohup ./cpu_monitor.sh &
 threshold=90
 log_file="cpu_monitor.log"
 while true; do
