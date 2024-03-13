@@ -4,9 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"  // 数据库引擎，可以切换为其他引擎
+  provider = "mysql"  // 数据库引擎，可以切换为其他引擎
   url      = env("DATABASE_URL")  // 数据库连接配置
 }
+
+
+
 // 用户表
 model User {
   id            Int       @id @default(autoincrement())
@@ -39,7 +42,11 @@ model UserProcessImageData {
   userLikeStatus    Int?     @default(0)
   usePoint          Int?     @default(1) //转换所需积分
 }
-
+model UserLog{
+  id            Int       @id @default(autoincrement())
+  userId  String // 用户的id
+  log  String 
+}
 model ImageIndex {
   id               Int      @id @default(autoincrement())
   imageUrl        String?
