@@ -27,11 +27,16 @@ import checkIn from './services/user/checkIn/index.js';
 import updateUserInfo from './services/user/updateUserInfo/index.js';
 import { ENV } from './config/index.js';
 import { authenticateToken } from './middleware/auth.js';
+import pay from './services/user/pay/index.js';
 import getQRCode from './services/user/getQRCode/index.js';
 import feedback from './services/user/feedback/index.js';
 import uploadLaunchInfo from './services/user/uploadLaunchInfo/index.js';
 
 import getTagImages from './services/image/getTagImages/index.js';
+import img2img from './services/sd/img2img/index.js';
+import txt2img from './services/sd/txt2img/index.js';
+import easyPhotoTrainLora from './services/sd/easyPhotoTrainLora/index.js';
+import easyPhotoSwapFace from './services/sd/easyPhotoSwapFace/index.js';
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
 
@@ -57,6 +62,11 @@ const routes = [
   ['/feedback', feedback],
   ['/uploadLaunchInfo', uploadLaunchInfo],
   ['/getQRCode', getQRCode],
+  ['/img2img', img2img],
+  ['/txt2img', txt2img],
+  ['/easyPhotoTrainLora', easyPhotoTrainLora],
+  ['/easyPhotoSwapFace', easyPhotoSwapFace],
+  ['/pay', pay],
 ];
 
 routes.forEach(([routePath, module, middleware]) => {
