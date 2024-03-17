@@ -117,6 +117,6 @@ export async function trainProcess(
       error.message
     );
     await deleteTaskInSDRunningTasks(requestId);
-    return null;
+    return false;
   }
 }

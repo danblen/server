@@ -49,7 +49,8 @@ model SDRunningTasks {
   openid        String?     // 用户的wx openid
   mainImagePath     String?
   roopImagePath     String?
-  img2imgreqData    String?// 存储JSON格式的img2imgreq数据，在 Prisma 使用 String 表示 JSON
+  img2imgreqData     String?  @db.Text // 存储JSON格式的img2imgreq数据，在 Prisma 使用 String 表示 JSON
+  txt2imgreqData     String? @db.Text  // 存储 JSON 格式的 txt2img 请求数据
   outputImagePath   String?
   createdAt         String? //  
   beforProcessTime  Float?

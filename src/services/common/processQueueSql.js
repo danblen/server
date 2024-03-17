@@ -9,7 +9,9 @@ export async function addTaskInSDRunningTasks(
   roopImagePath = null,
   processType,
   userTrainDataPath,
-  loraName
+  loraName,
+  img2imgreqData = null,
+  txt2imgreqData = null
 ) {
   try {
     // 新建一条换脸任务的数据，保存数据到数据库
@@ -25,6 +27,8 @@ export async function addTaskInSDRunningTasks(
         usePoint: usePoint,
         userTrainDataPath: userTrainDataPath,
         loraName: loraName,
+        img2imgreqData: img2imgreqData,
+        txt2imgreqData: txt2imgreqData,
       },
     });
     return true;
@@ -97,6 +101,22 @@ export async function getEarliestPendingTask() {
     return earliestTask;
   } catch (error) {
     console.error('Error getting earliest pending task:', error.message);
+    throw error;
+  }
+}
+
+export async function getPendingTasksCount() {
+  try {
+    // 查询数据库，获取挂起任务的数量
+    const pendingTasksCount = await prisma.sDRunningTasks.count({
+      where: {
+        requestStatus: 'pending',
+      },
+    });
+
+    return pendingTasksCount;
+  } catch (error) {
+    console.error('Error getting pending tasks count:', error.message);
     throw error;
   }
 }
