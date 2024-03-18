@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import axios from 'axios'; // 引入 axios 库用于发送 HTTP 请求
-import { wxConfig } from '../../../config/wxConfig';
+import { wxConfig } from '../../../config/wxConfig.js';
 
 // 填写微信支付相关参数
 const notifyUrl = 'https://your_domain.com/notify'; // 支付结果通知地址
