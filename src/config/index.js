@@ -30,7 +30,7 @@ const ENV_MAP = {
     SERVER_HOST: process.env.SERVER_HOST,
     SERVER_PORT: process.env.SERVER_PORT_TEST,
     API_TYPE: process.env.API_TYPE_TEST,
-    URL_STATIC: process.env.URL_STATIC_TEST,
+    URL_STATIC: process.env.URL_STATIC,
     GPU_HOST: process.env.GPU_HOST,
   },
   dev: {
