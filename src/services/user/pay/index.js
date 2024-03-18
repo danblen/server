@@ -1,12 +1,12 @@
 import crypto from 'crypto';
 import axios from 'axios'; // 引入 axios 库用于发送 HTTP 请求
-
+import { wxConfig } from '../../../config/wxConfig';
 
 // 填写微信支付相关参数
 const notifyUrl = 'https://your_domain.com/notify'; // 支付结果通知地址
-const wechatPayKey = '4zYh7gkR9oTcL3aP6FbWqXv5iJ2sEdV1'; // 微信支付密钥
-const appId = 'wx3e67e2268416075f';
-const appSecret = '1d680a99f50a791d44180dac063001d8';
+const wechatPayKey = wxConfig.wechatPayKey; // 微信支付密钥
+const appId = wxConfig.appid;
+const appSecret = wxConfig.secret;
 
 // 处理支付请求的路由
 export default async (req, res) => {
@@ -20,7 +20,7 @@ export default async (req, res) => {
       totalFee,
       spbillCreateIp,
       userId,
-      appId,
+      wxConfig.APP,
       appSecret
     );
 
@@ -103,7 +103,7 @@ function generateSign(params) {
     .sort()
     .map((key) => `${key}=${params[key]}`)
     .join('&');
-  const stringSignTemp = `${stringA}&key=${wechatPayKey}`;
+  const stringSignTemp = `${stringA}&key=${wxConfig.wechatPayKey}`;
   return crypto
     .createHash('md5')
     .update(stringSignTemp, 'utf8')

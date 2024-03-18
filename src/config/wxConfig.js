@@ -4,4 +4,5 @@ export const wxConfig = {
   secret: process.env.SECRET,
   grant_type: 'authorization_code',
   url: 'https://api.weixin.qq.com/sns/jscode2session',
+  wechatPayKey: process.env.wechatPayKey,
 };

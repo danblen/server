@@ -33,6 +33,7 @@
     "nodemailer": "^6.6.0",
     "prisma": "^5.9.0",
     "redis": "^3.0.2",
+    "sharp": "^0.33.2",
     "xss": "^1.0.10"
   },
   "devDependencies": {
