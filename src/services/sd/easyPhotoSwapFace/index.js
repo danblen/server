@@ -11,7 +11,7 @@ export default async (req, res) => {
       userId,
       requestId,
       usePoint = 1,
-      sdParams: { imageUrl },
+      sdParams: { imageUrls },
     } = req.body;
     if (!userId || !requestId) {
       return { message: 'no userId' };
@@ -36,7 +36,7 @@ export default async (req, res) => {
         userId,
         requestId,
         usePoint,
-        imageUrl[0],
+        imageUrls[0],
         null,
         'loraFace',
         null,
