@@ -74,3 +74,20 @@ function getImagePaths(directory, baseUrl) {
   });
   return imagesByTag;
 }
+
+function traverseFolder(folderPath) {
+  const files = fs.readdirSync(folderPath);
+
+  files.forEach((file) => {
+    const filePath = path.join(folderPath, file);
+    const stats = fs.statSync(filePath);
+
+    if (stats.isDirectory()) {
+      // 如果是目录，则递归遍历该目录
+      traverseFolder(filePath);
+    } else {
+      // 如果是文件，则输出文件路径
+      console.log(filePath);
+    }
+  });
+}

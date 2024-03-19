@@ -43,3 +43,11 @@ const ENV_MAP = {
 };
 export const ENV = ENV_MAP[process.env.NODE_ENV];
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+
+export const COSConfig = {
+  SecretId: process.env.SecretId,
+  SecretKey: process.env.SecretKey,
+  // Region: process.env.Region,
+  // Bucket: process.env.Bucket,
+  // Domain: process.env.Domain,
+};

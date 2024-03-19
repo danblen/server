@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import path from 'path';
 
 export async function saveBase64Image(base64Data, fullPathDir, fileName) {
   if (!base64Data) return null;

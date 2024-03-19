@@ -25,6 +25,8 @@ model User {
   updatedAt     String?  // 用户数据更新的时间
   lastLoginAt   String?   // 用户上一次登陆的时间
   loraName      String?  //用户lora名字
+  userTrainPic  String?  //数字人对应的训练数据图片
+  loraPic       String?  //数字人图片,展示在主页
 }
 // 用户图像转换表
 model UserProcessImageData {
