@@ -1,3 +1,7 @@
+### 本地开发数据库连不上
+
+云服务平台防火墙放开数据库端口 3306 连接
+
 更新软件包列表：
 
 sudo apt update
@@ -28,7 +32,7 @@ sudo mysql
 
 CREATE DATABASE your_database_name;
 CREATE USER 'your_username'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON your_database_name.* TO 'your_username'@'localhost';
+GRANT ALL PRIVILEGES ON your_database_name.\* TO 'your_username'@'localhost';
 FLUSH PRIVILEGES;
 替换 'your_database_name'、'your_username' 和 'your_password' 为你自己的值。
 
@@ -42,8 +46,6 @@ exit;
 sudo ufw allow 3306
 请根据你的防火墙配置调整。
 
-
 mysql -u root -p
 没权限
 sudo mysql -u root -p
-

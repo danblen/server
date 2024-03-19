@@ -34,10 +34,10 @@ const ENV_MAP = {
     GPU_HOST: process.env.GPU_HOST,
   },
   dev: {
-    SERVER_HOST: process.env.SERVER_HOST_DEV,
-    SERVER_PORT: process.env.SERVER_PORT_DEV,
-    API_TYPE: process.env.API_TYPE_DEV,
-    URL_STATIC: process.env.URL_STATIC_DEV,
+    SERVER_HOST: process.env.SERVER_HOST,
+    SERVER_PORT: process.env.SERVER_PORT,
+    API_TYPE: process.env.API_TYPE,
+    URL_STATIC: process.env.URL_STATIC,
     GPU_HOST: process.env.GPU_HOST,
   },
 };
