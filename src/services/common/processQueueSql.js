@@ -5,13 +5,13 @@ export async function addTaskInSDRunningTasks(
   userId,
   requestId,
   usePoint,
-  mainImagePath = null,
-  roopImagePath = null,
+  mainImagePath = '',
+  roopImagePath = '',
   processType,
   userTrainDataPath,
   loraName,
-  img2imgreqData = null,
-  txt2imgreqData = null
+  img2imgreqData = '',
+  txt2imgreqData = ''
 ) {
   try {
     // 新建一条换脸任务的数据，保存数据到数据库
@@ -22,8 +22,8 @@ export async function addTaskInSDRunningTasks(
         requestId: requestId,
         createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
         requestStatus: 'pending',
-        mainImagePath: mainImagePath || null,
-        roopImagePath: roopImagePath || null,
+        mainImagePath: mainImagePath,
+        roopImagePath: roopImagePath,
         usePoint: usePoint,
         userTrainDataPath: userTrainDataPath,
         loraName: loraName,
