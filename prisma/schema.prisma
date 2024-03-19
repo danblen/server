@@ -27,6 +27,7 @@ model User {
   loraName      String?  //用户lora名字
   userTrainPic  String?  //数字人对应的训练数据图片
   loraPic       String?  //数字人图片,展示在主页
+  loraStatus    String?  //数字人状态：pending（制作中）、done（训练完成）、error（训练异常）
 }
 // 用户图像转换表
 model UserProcessImageData {
