@@ -25,9 +25,14 @@ export default async (req, res) => {
   const result = resultArray.map((tagPicArray) =>
     tagPicArray.map((tagPic) => {
       if (tagPic.data) {
-        tagPic.data = JSON.parse(tagPic.data).map(
-          (item) => ENV.URL_STATIC + item
-        );
+        try {
+          const parsedData = JSON.parse(tagPic.data);
+          if (Array.isArray(parsedData)) {
+            tagPic.data = parsedData.map((item) => ENV.URL_STATIC + item);
+          }
+        } catch (error) {
+          console.log(error);
+        }
       }
       tagPic.imageUrl = ENV.URL_STATIC + tagPic.imageUrl;
       return tagPic;
