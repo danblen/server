@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 // 用法示例：遍历指定文件夹下的所有文件并构建对象
-// const filePathObject = getFilePathFromDir( STATIC_DIR + '/allImages');
-// console.log(filePathObject);
+// const filePaths = getFilePathFromDir( STATIC_DIR + '/allImages');
+// console.log(filePaths);
 // 返回
 // ['/home/ubuntu/code/server/static/allImages/icons8-首页-64.png', '/home/ubuntu/code/server/static/allImages/icons8-首页-64.png']
 export function getFilePathFromDir(folderPath) {

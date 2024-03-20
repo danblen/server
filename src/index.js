@@ -37,6 +37,8 @@ import img2img from './services/sd/img2img/index.js';
 import txt2img from './services/sd/txt2img/index.js';
 import easyPhotoTrainLora from './services/sd/easyPhotoTrainLora/index.js';
 import easyPhotoSwapFace from './services/sd/easyPhotoSwapFace/index.js';
+import update from './services/image/getTagImages/update.js';
+import getImages from './services/image/getImages/index.js';
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
 
@@ -64,6 +66,8 @@ const routes = [
   ['/getQRCode', getQRCode],
   ['/img2img', img2img],
   ['/txt2img', txt2img],
+  ['/update', update],
+  ['/getImages', getImages],
   ['/easyPhotoTrainLora', easyPhotoTrainLora],
   ['/easyPhotoSwapFace', easyPhotoSwapFace],
   ['/pay', pay],

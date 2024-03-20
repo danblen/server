@@ -99,6 +99,23 @@ model ImageUserUpload {
   category         String?   // 图像分类
   tagName          String?   // 图像标签
 }
+model Images {
+  userId           String    @map("userId") // 映射到 User 表的 userId 字段
+  userName         String?   @map("userName") // 映射到 User 表的 userName 字段
+  userHeadPic      String?   @map("userHeadPic") // 映射到 User 表的 userHeadPic 字段
+  momentId         String    @unique  
+  momentText       String    // 朋友圈文案
+  momentTitle      String    // 朋友圈文案标题
+  momentPics       String    // 以逗号分隔的图片 URL 字符串
+  viewCount        Int       @default(0) // 查看数量，默认为0
+  createdAt        String?
+  likesCount       Int       @default(0)
+  userLikeStatus   Boolean?  @default(false)
+  isChecked        Boolean?  @default(false) //是否经过审核
+  category         String?   // 图像分类
+  tagName          String?   // 图像标签
+  id               Int       @id @default(autoincrement())
+}
 // model ImageTag {
 //   id         Int      @id @default(autoincrement())
 //   tagName    String
