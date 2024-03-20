@@ -79,16 +79,27 @@ export async function trainProcess(
       );
       await deleteTaskInSDRunningTasks(requestId);
       addUserPoints(userId, usePoint);
+
+      await prisma.user.update({
+        where: {
+          userId,
+        },
+        data: {
+          loraStatus: 'error',
+        },
+      });
+
       return false;
     }
 
     // Update user's loraName
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: {
         userId,
       },
       data: {
         loraName,
+        loraStatus: 'done',
       },
     });
 
@@ -117,6 +128,14 @@ export async function trainProcess(
       error.message
     );
     await deleteTaskInSDRunningTasks(requestId);
+    await prisma.user.update({
+      where: {
+        userId,
+      },
+      data: {
+        loraStatus: 'error',
+      },
+    });
     return false;
   }
 }

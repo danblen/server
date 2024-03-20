@@ -7,6 +7,7 @@ import * as processQueue from './services/common/processQueueSql.js';
 import { trainProcess } from './services/sd/easyPhotoTrainLora/trainLora.js';
 import { generatProcess } from './services/sd/easyPhotoSwapFace/generated.js';
 import { img2imgProcess } from './services/sd/img2img/img2imgProcess.js';
+import { txt2imgProcess } from './services/sd/txt2img/txt2imgProcess.js';
 
 let pendingTasksCount = 0; // 记录挂起任务的数量
 
@@ -31,6 +32,7 @@ export async function pendingTaskProcess() {
           typeof pendingTask.imageType === 'string'
         ) {
           if (pendingTask.imageType === 'train') {
+            console.log('start task', pendingTask.imageType);
             await trainProcess(
               pendingTask.userId,
               pendingTask.requestId,
@@ -38,6 +40,7 @@ export async function pendingTaskProcess() {
               pendingTask.userTrainDataPath
             );
           } else if (pendingTask.imageType === 'loraFace') {
+            console.log('start task', pendingTask);
             await generatProcess(
               pendingTask.userId,
               pendingTask.requestId,
@@ -46,6 +49,7 @@ export async function pendingTaskProcess() {
               pendingTask.loraName
             );
           } else if (pendingTask.imageType === 'img2img') {
+            console.log('start task', pendingTask.imageType);
             await img2imgProcess(
               pendingTask.userId,
               pendingTask.requestId,
@@ -55,6 +59,14 @@ export async function pendingTaskProcess() {
               pendingTask.roopImagePath
             );
           } else if (pendingTask.imageType === 'txt2img') {
+            console.log('start task', pendingTask.imageType);
+            await txt2imgProcess(
+              pendingTask.userId,
+              pendingTask.requestId,
+              pendingTask.usePoint,
+              pendingTask.txt2imgreqData,
+              pendingTask.roopImagePath
+            );
           } else {
             console.error(
               'Error task type while processing pending tasks:',

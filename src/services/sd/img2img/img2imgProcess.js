@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { ENV, STATIC_DIR } from '../../../config/index.js';
-import { DateTime } from 'luxon';
 import {
   addGenImageInUserProcessImageData,
   deleteTaskInSDRunningTasks,
@@ -32,10 +31,7 @@ export async function img2imgProcess(
     if (sdParams?.alwayson_scripts?.roop?.args) {
       sdParams.alwayson_scripts.roop.args[0] = imageData;
     }
-    let res = await axios.post(
-      `https://u349479-b416-03e0f33d.westb.seetacloud.com:8443/sdapi/v1/img2img`,
-      sdParams
-    );
+    let res = await axios.post(`${ENV.GPU_HOST}/sdapi/v1/img2img`, sdParams);
     console.log('out:', res.data);
     if (res?.data) {
       const relativePathDir = path.join(
