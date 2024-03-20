@@ -41,7 +41,14 @@ const ENV_MAP = {
     GPU_HOST: process.env.GPU_HOST,
   },
 };
-export const ENV = ENV_MAP[process.env.NODE_ENV];
+export let ENV = {
+  SERVER_HOST: '',
+  SERVER_PORT: '',
+  API_TYPE: ' ',
+  URL_STATIC: '',
+  GPU_HOST: '',
+};
+ENV = ENV_MAP[process.env.NODE_ENV];
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 export const COSConfig = {

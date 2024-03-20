@@ -37,8 +37,10 @@ import img2img from './services/sd/img2img/index.js';
 import txt2img from './services/sd/txt2img/index.js';
 import easyPhotoTrainLora from './services/sd/easyPhotoTrainLora/index.js';
 import easyPhotoSwapFace from './services/sd/easyPhotoSwapFace/index.js';
-import update from './services/image/getTagImages/update.js';
+import update from './services/image/getImages/update.js';
 import getImages from './services/image/getImages/index.js';
+import getAppImage from './services/image/getAllImages/getAppImages.js';
+import getAppImages from './services/image/getAllImages/getAppImages.js';
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
 
@@ -67,6 +69,7 @@ const routes = [
   ['/img2img', img2img],
   ['/txt2img', txt2img],
   ['/update', update],
+  ['/getAppImages', getAppImages],
   ['/getImages', getImages],
   ['/easyPhotoTrainLora', easyPhotoTrainLora],
   ['/easyPhotoSwapFace', easyPhotoSwapFace],

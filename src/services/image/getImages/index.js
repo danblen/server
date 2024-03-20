@@ -1,4 +1,4 @@
-import { STATIC_DIR } from '../../../config/index.js';
+import { ENV, STATIC_DIR } from '../../../config/index.js';
 import prisma from '../../../db/prisma.js';
 
 // 查询图片接口
@@ -13,7 +13,7 @@ export default async (req) => {
 
     // 对每个查询参数进行查询并添加到结果数组中
     await Promise.all(
-      queryParamsArray.map(async (queryParams) => {
+      queryParamsArray.map(async (queryParams, index) => {
         // 执行查询图片记录
         const tagPics = await prisma.imageUserUpload.findMany({
           where: queryParams, // 使用传入的查询参数作为条件
@@ -21,12 +21,20 @@ export default async (req) => {
         });
 
         // 将查询结果添加到结果数组中
-        resultArray.push(tagPics);
+        resultArray[index] = tagPics;
       })
     );
-
+    const result = resultArray.map((tagPicArray) =>
+      tagPicArray.map((tagPic) => {
+        tagPic.momentPics = `${ENV.URL_STATIC}${tagPic.momentPics}`;
+        tagPic.userHeadPic = `${ENV.URL_STATIC}${tagPic.userHeadPic}`;
+        // tagPic.momentPics = `${tagPic.momentPics}`;
+        // tagPic.userHeadPic = `${tagPic.userHeadPic}`;
+        return tagPic;
+      })
+    );
     // 随机排序并选择前200个元素
-    const shuffledTagPics = resultArray.map((tagPicArray) =>
+    const shuffledTagPics = result.map((tagPicArray) =>
       tagPicArray.sort(() => Math.random() - 0.5).slice(0, 200)
     );
 
