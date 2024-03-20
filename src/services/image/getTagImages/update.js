@@ -16,10 +16,12 @@ export default async () => {
       images.map(async (image) => {
         const updatedImage = await prisma.imageUserUpload.updateMany({
           data: {
-            momentPics: image.momentPics.replace(
-              '/home/ubuntu/code/server/static/',
-              'https://facei.top/static/'
-            ),
+            momentPics: '/' + image.momentPics,
+            // userHeadPic: '/' + image.userHeadPic,
+            // userHeadPic: image.userHeadPic.replace(
+            //   '/home/ubuntu/code/server/static/',
+            //   ''
+            // ),
           },
           where: {
             momentId: image.momentId,

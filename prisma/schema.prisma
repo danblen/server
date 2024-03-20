@@ -1,137 +1,100 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "mysql"  // 数据库引擎，可以切换为其他引擎
-  url      = env("DATABASE_URL")  // 数据库连接配置
+  provider = "mysql" // 数据库引擎，可以切换为其他引擎
+  url      = env("DATABASE_URL") // 数据库连接配置
 }
-
-
 
 // 用户表
 model User {
-  id            Int       @id @default(autoincrement())
-  userId        String    @unique // 用户的id
-  openid        String?    @unique // 用户的wx openid
-  userName      String?
-  userHeadPic   String?
-  points        Int?      @default(0) // 用户的积分
-  isChecked     Boolean?  @default(false) // 当天是否签到
-  lastCheckIn   String?
-  level         String    @default("1")
-  createdAt     String? // 使用 Prisma 默认的方式存储日期时间
-  updatedAt     String?  // 用户数据更新的时间
-  lastLoginAt   String?   // 用户上一次登陆的时间
-  loraName      String?  //用户lora名字
-  userTrainPic  String?  //数字人对应的训练数据图片
-  loraPic       String?  //数字人图片,展示在主页
-  loraStatus    String?  //数字人状态：pending（制作中）、done（训练完成）、error（训练异常）
+  id           Int      @id @default(autoincrement())
+  userId       String   @unique // 用户的id
+  points       Int?     @default(0)
+  isChecked    Boolean? @default(false)
+  lastCheckIn  String?
+  level        String   @default("1")
+  createdAt    String? // 使用 Prisma 默认的方式存储日期时间
+  updatedAt    String? // 用户数据更新的时间
+  lastLoginAt  String? // 用户上一次登陆的时间
+  userHeadPic  String?
+  userName     String?
+  openid       String?  @unique
+  loraName     String?//用户lora名字
+  loraPic      String?//数字人图片,展示在主页
+  loraStatus   String? //数字人状态：pending（制作中）、done（训练完成）、error（训练异常）
+  userTrainPic String?//数字人对应的训练数据图片
 }
-// 用户图像转换表
+
 model UserProcessImageData {
-  userId            String // 用户的id
-  openid        String?     // 用户的wx openid
-  mainImagePath     String?
-  roopImagePath     String?
-  img2imgreqData    String?// 存储JSON格式的img2imgreq数据，在 Prisma 使用 String 表示 JSON
-  outputImagePath   String?
-  createdAt         String? //  
-  beforProcessTime  Float?
-  processTime       Float?
-  imageType         String?
-  requestId         String   @id @unique // 在 Prisma 使用 @id 和 @unique 指令表示主键和唯一约束
-  requestStatus     String?  @default("no-data")
-  userLikeStatus    Int?     @default(0)
-  usePoint          Int?     @default(1) //转换所需积分
+  userId           String // 用户的id
+  mainImagePath    String?
+  roopImagePath    String?
+  img2imgreqData   String?// 存储JSON格式的img2imgreq数据，在 Prisma 使用 String 表示 JSON
+  outputImagePath  String?
+  createdAt        String?
+  beforProcessTime Float?
+  processTime      Float?
+  imageType        String?
+  requestId        String  @id @unique// 在 Prisma 使用 @id 和 @unique 指令表示主键和唯一约束
+  requestStatus    String? @default("no-data")
+  userLikeStatus   Int?    @default(0)
+  usePoint         Int?    @default(1)
+  openid           String?  // 用户的wx openid
 }
-// 用户图像任务表
+
 model SDRunningTasks {
-  userId            String // 用户的id
-  openid        String?     // 用户的wx openid
+  userId            String
+  openid            String?
   mainImagePath     String?
   roopImagePath     String?
-  img2imgreqData     String?  @db.Text // 存储JSON格式的img2imgreq数据，在 Prisma 使用 String 表示 JSON
-  txt2imgreqData     String? @db.Text  // 存储 JSON 格式的 txt2img 请求数据
+  img2imgreqData    String? @db.Text  // 存储JSON格式的img2imgreq数据，在 Prisma 使用 String 表示 JSON
   outputImagePath   String?
-  createdAt         String? //  
+  createdAt         String?
   beforProcessTime  Float?
   processTime       Float?
   imageType         String?
-  requestId         String   @id @unique // 在 Prisma 使用 @id 和 @unique 指令表示主键和唯一约束
-  requestStatus     String?  @default("no-data")
-  userLikeStatus    Int?     @default(0)
-  usePoint          Int?     @default(1) //转换所需积分
-  userTrainDataPath          String?   //用户训练图像
-  loraName      String?  //用户lora名字
+  requestId         String  @id @unique
+  requestStatus     String? @default("no-data")
+  userLikeStatus    Int?    @default(0)
+  usePoint          Int?    @default(1)//转换所需积分
+  loraName          String?
+  txt2imgreqData    String? @db.Text // 存储 JSON 格式的 txt2img 请求数据
+  userTrainDataPath String?  //用户训练图像
 }
-model UserLog{
-  id            Int       @id @default(autoincrement())
-  userId  String // 用户的id
-  log  String 
+
+model UserLog {
+  id     Int    @id @default(autoincrement())
+  userId String
+  log    String
 }
+
 model ImageIndex {
-  id               Int      @id @default(autoincrement())
-  imageUrl        String?
-  data            String?
-  description      String?
-  category         String?  // 图像分类
-  tags             String?  // 图像标签
-  createdAt        String?
-  likesCount       Int     @default(0)
+  id          Int     @id @default(autoincrement())
+  imageUrl    String?
+  data        String?
+  description String?
+  category    String?
+  tags        String?
+  createdAt   String?
+  likesCount  Int     @default(0)
 }
 
-// 用户发布动态表
 model ImageUserUpload {
-  userId           String    @map("userId") // 映射到 User 表的 userId 字段
-  userName         String?   @map("userName") // 映射到 User 表的 userName 字段
-  userHeadPic      String?   @map("userHeadPic") // 映射到 User 表的 userHeadPic 字段
-  momentId         String    @unique  
-  momentText       String    // 朋友圈文案
-  momentTitle      String    // 朋友圈文案标题
-  momentPics       String    // 以逗号分隔的图片 URL 字符串
-  viewCount        Int       @default(0) // 查看数量，默认为0
-  createdAt        String?
-  likesCount       Int       @default(0)
-  userLikeStatus   Boolean?  @default(false)
-  isChecked        Boolean?  @default(false) //是否经过审核
-  category         String?   // 图像分类
-  tagName          String?   // 图像标签
+  userId         String   @map("userId")// 映射到 User 表的 userId 字段
+  momentId       String   @unique
+  momentText     String // 朋友圈文案
+  momentTitle    String    // 朋友圈文案标题
+  momentPics     String // 以逗号分隔的图片 URL 字符串
+  viewCount      Int      @default(0)
+  createdAt      String?
+  likesCount     Int      @default(0)
+  userLikeStatus Boolean? @default(false)
+  category       String?
+  tagName        String?
+  isChecked      Boolean? @default(false)
+  userHeadPic    String?  @map("userHeadPic")// 映射到 User 表的 userHeadPic 字段
+  userName       String?  @map("userName")// 映射到 User 表的 userName 字段
 }
-model Images {
-  userId           String    @map("userId") // 映射到 User 表的 userId 字段
-  userName         String?   @map("userName") // 映射到 User 表的 userName 字段
-  userHeadPic      String?   @map("userHeadPic") // 映射到 User 表的 userHeadPic 字段
-  momentId         String    @unique  
-  momentText       String    // 朋友圈文案
-  momentTitle      String    // 朋友圈文案标题
-  momentPics       String    // 以逗号分隔的图片 URL 字符串
-  viewCount        Int       @default(0) // 查看数量，默认为0
-  createdAt        String?
-  likesCount       Int       @default(0)
-  userLikeStatus   Boolean?  @default(false)
-  isChecked        Boolean?  @default(false) //是否经过审核
-  category         String?   // 图像分类
-  tagName          String?   // 图像标签
-  id               Int       @id @default(autoincrement())
-}
-// model ImageTag {
-//   id         Int      @id @default(autoincrement())
-//   tagName    String
-//   images     ImageIndex[]
-// }
-
-// model PopularImage {
-//   id         Int      @id @default(autoincrement())
-//   imageId    Int
-//   image      ImageIndex @relation(fields: [imageId], references: [id])
-//   createdAt  DateTime @default(now())
-// }
-
-// model TimeBasedImage {
-//   id         Int      @id @default(autoincrement())
-//   imageId    Int
-//   image      ImageIndex @relation(fields: [imageId], references: [id])
-//   timestamp  DateTime
-// }
