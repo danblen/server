@@ -33,7 +33,7 @@ export async function addTaskInSDRunningTasks(
     });
     return true;
   } catch (error) {
-    console.error('Error create sDRunningTasks info in SQL:', error.message);
+    console.error('Error create sDRunningTasks info in SQL:', error);
     return false;
   } finally {
   }
@@ -47,7 +47,7 @@ export async function deleteTaskInSDRunningTasks(requestId) {
       },
     });
   } catch (error) {
-    console.error('Error updating sDRunningTasks info in SQL:', error.message);
+    console.error('Error delete sDRunningTasks info in SQL:', error);
   } finally {
   }
 }
@@ -78,10 +78,7 @@ export async function addGenImageInUserProcessImageData(
       },
     });
   } catch (error) {
-    console.error(
-      'Error updating userProcessImageData info in SQL:',
-      error.message
-    );
+    console.error('Error create userProcessImageData info in SQL:', error);
   } finally {
   }
 }
@@ -100,7 +97,7 @@ export async function getEarliestPendingTask() {
 
     return earliestTask;
   } catch (error) {
-    console.error('Error getting earliest pending task:', error.message);
+    console.error('Error getting earliest pending task:', error);
     throw error;
   }
 }
@@ -116,7 +113,7 @@ export async function getPendingTasksCount() {
 
     return pendingTasksCount;
   } catch (error) {
-    console.error('Error getting pending tasks count:', error.message);
+    console.error('Error getting pending tasks count:', error);
     throw error;
   }
 }

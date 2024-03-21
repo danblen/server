@@ -40,7 +40,7 @@ export async function pendingTaskProcess() {
               pendingTask.userTrainDataPath
             );
           } else if (pendingTask.imageType === 'loraFace') {
-            console.log('start task', pendingTask);
+            console.log('start task', pendingTask.imageType);
             await generatProcess(
               pendingTask.userId,
               pendingTask.requestId,

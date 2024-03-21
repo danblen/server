@@ -1,14 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
-import sharp from 'sharp';
+import { format } from 'date-fns';
 import { DateTime } from 'luxon';
 import {
   addGenImageInUserProcessImageData,
   deleteTaskInSDRunningTasks,
 } from '../../common/processQueueSql.js';
 import prisma from '../../../db/prisma.js';
+import { ENV, STATIC_DIR } from '../../../config/index.js';
 import { addUserPoints } from '../../common/userPoints.js';
+import { saveBase64Image } from '../../../common/file.js';
 
 // 辅助函数：检查是否为有效 URL
 function isValidUrl(url) {
@@ -18,11 +20,6 @@ function isValidUrl(url) {
   } catch (error) {
     return false;
   }
-}
-
-function decodeImageFromBase64Jpeg(base64Image) {
-  const imageBuffer = Buffer.from(base64Image, 'base64');
-  return sharp(imageBuffer);
 }
 
 // 发送图像数据到 GPU 进行处理
@@ -70,39 +67,22 @@ async function processImage(encodedImage, loraName, userId) {
 
     // 处理处理结果
     if (outputs && outputs.length > 0) {
-      console.log('Number of Outputs:', outputs.length);
-      // 获取当前时间
-      const currentDateHMS = new Date();
-      const hours = currentDateHMS.getHours().toString().padStart(2, '0');
-      const minutes = currentDateHMS.getMinutes().toString().padStart(2, '0');
-      const seconds = currentDateHMS.getSeconds().toString().padStart(2, '0');
-      const currentTime = `${hours}${minutes}${seconds}`;
-
-      // 获取当前日期
-      const currentDateYM = new Date()
-        .toLocaleDateString('zh-CN', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        })
-        .replace(/\//g, '-');
-
-      // 构建保存路径
-      const savePath = `/home/ubuntu/code/server/static/sd_make_images/${userId}/${currentDateYM}`;
-
-      // 检查路径是否存在，如果不存在则递归创建
-      if (!fs.existsSync(savePath)) {
-        fs.mkdirSync(savePath, { recursive: true });
-      }
+      console.log('Number of generated:', outputs.length);
       let outputFile = null;
       for (let i = 0; i < outputs.length; i++) {
         // 解码处理后的图像并保存
-        const decodedImage = await decodeImageFromBase64Jpeg(outputs[i]);
-        outputFile = `${savePath}/output${i}_${currentTime}.jpg`;
-        await decodedImage.toFile(outputFile);
-        const stats = fs.statSync(outputFile);
-        console.log('Output image size:', stats.size, 'bytes');
-        console.log('Output file path:', outputFile); // 输出完整的文件路径
+        const relativePathDir = path.join(
+          '/userImages',
+          userId,
+          format(new Date(), 'yyyy-MM-dd')
+        );
+        const fileName = `${Date.now()}.png`;
+        outputFile = await saveBase64Image(
+          outputs[i],
+          STATIC_DIR + relativePathDir,
+          fileName
+        );
+        console.log('generated outputFile', outputFile);
         break; //只保存一张
       }
 
@@ -116,7 +96,7 @@ async function processImage(encodedImage, loraName, userId) {
       return { message: message, status: 500 };
     }
   } catch (error) {
-    console.error(`Error occurred while processing image ${savePath}:`, error);
+    console.error(`Error occurred while processing image:`, error);
     throw error; // 抛出错误以便上层函数捕获
   }
 }
@@ -129,10 +109,13 @@ async function processImageUrl(imageUrl, loraName, userId) {
       responseType: 'arraybuffer',
     });
     // 将获取的图片数据转换为 base64 字符串
-    const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+    const base64Image = Buffer.from(response.data).toString('base64');
     return await processImage(base64Image, loraName, userId);
   } catch (error) {
-    console.error(`Error occurred while processing image ${imageUrl}:`, error);
+    console.error(
+      `Error occurred while processing image ${imageUrl}:`,
+      error.message
+    );
     throw error; // 抛出错误以便上层函数捕获
   }
 }

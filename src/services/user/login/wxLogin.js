@@ -112,6 +112,8 @@ export default async (reqBody, res) => {
         level: newUser.level,
         userHeadPic: updatedMomentPics,
         token: generateToken(newUser),
+        loraPic: newUser.loraPic,
+        loraStatus: newUser.loraStatus,
       };
       return { data: userInfo };
     } else {
@@ -136,6 +138,8 @@ export default async (reqBody, res) => {
         level: user.level,
         token: generateToken(user),
         userHeadPic: updatedMomentPics,
+        loraPic: user.loraPic,
+        loraStatus: user.loraStatus,
       };
       return { data: userInfo };
     }
