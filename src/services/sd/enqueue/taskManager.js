@@ -99,17 +99,27 @@ export async function getDoneTaskResults() {
   const promises = tasks.map(async (task) => {
     const { type, requestId, taskId, data, userId } = task;
     const res = await api['getTaskResults'](taskId);
-    let image = res.data.data[0].image;
-    let filePath = JSON.parse(data).images[0];
-    filePath = filePath.replace('/root/autodl-tmp', '');
-    await saveBase64Image(
-      image,
-      STATIC_DIR + path.dirname(filePath),
-      path.basename(filePath)
-    );
-    return { type, requestId, filePath, taskId, userId }; // ; // 返回更新后的 taskId
+    let image;
+    let filePath;
+    if (res?.data?.data) {
+      try {
+        filePath = JSON.parse(data).images[0];
+        image = res.data.data[0].image;
+      } catch (error) {}
+    }
+    if (filePath && image) {
+      filePath = filePath.replace('/root/autodl-tmp', '');
+      await saveBase64Image(
+        image,
+        STATIC_DIR + path.dirname(filePath),
+        path.basename(filePath)
+      );
+      return { type, requestId, filePath, taskId, userId };
+    }
+    return { type, requestId, filePath: '', taskId, userId };
   });
-  const restasks = await Promise.all(promises);
+  let restasks = await Promise.all(promises);
+  restasks = restasks.filter(({ filePath }) => filePath); // 过滤出已完成的任务
   await prisma.userProcessImageData.createMany({
     data: restasks.map(({ type, requestId, filePath, taskId, userId }) => ({
       outputImagePath: filePath,
