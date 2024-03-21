@@ -43,31 +43,39 @@ export default async () => {
     // });
 
     // console.log('成功替换图片路径的记录数量:', createdImages.length);
-    return {};
+    // return {};
 
-    // 查询所有需要替换路径的图片记录
-    // const images = await prisma.imageUserUpload.findMany({
-    //   // where: {
-    //   //   momentPics: {
-    //   //     contains: '/home/ubuntu/code/server/static/', // 包含旧路径的图片
-    //   //   },
-    //   // },
+    // const images = await prisma.userProcessImageData.deleteMany({
+    //   where: {
+    //     outputImagePath: null,
+    //   },
     // });
 
-    // 批量更新图片路径
+    // 查询所有需要替换路径的图片记录
+    // const images = await prisma.userProcessImageData.findMany({
+    //   where: {
+    //     outputImagePath: null,
+    //     // outputImagePath: {
+    //     //   // contains: '/home/ubuntu/code/server/static/', // 包含旧路径的图片
+    //     // },
+    //   },
+    // });
+
+    // // 批量更新图片路径
     // const updatedImages = await Promise.all(
     //   images.map(async (image) => {
-    //     const updatedImage = await prisma.imageUserUpload.updateMany({
+    //     const updatedImage = await prisma.userProcessImageData.updateMany({
     //       data: {
-    //         momentPics: '/' + image.momentPics,
+    //         // momentPics: '/' + image.momentPics,
     //         // userHeadPic: '/' + image.userHeadPic,
-    //         // userHeadPic: image.userHeadPic.replace(
+    //         outputImagePath: '/' + image.outputImagePath,
+    //         // outputImagePath: image.outputImagePath.replace(
     //         //   '/home/ubuntu/code/server/static/',
     //         //   ''
     //         // ),
     //       },
     //       where: {
-    //         momentId: image.momentId,
+    //         requestId: image.requestId,
     //       },
     //     });
     //     return updatedImage;
@@ -75,7 +83,7 @@ export default async () => {
     // );
 
     // console.log('成功替换图片路径的记录数量:', updatedImages.length);
-    // return updatedImages;
+    return {};
   } catch (error) {
     console.error('替换图片路径时出错:', error);
     throw error;

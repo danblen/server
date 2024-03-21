@@ -33,10 +33,12 @@ export default async (req, res) => {
       // requestStatus,
     },
   });
-  userImages.map((item) => {
-    item.outputImagePath = ENV.URL_STATIC + item.outputImagePath;
-    return item;
-  });
+  userImages
+    .filter((item) => item.outputImagePath)
+    .map((item) => {
+      item.outputImagePath = ENV.URL_STATIC + item.outputImagePath;
+      return item;
+    });
   if (userImages) {
     // 如果找到了，返回用户的历史生成的作品图片
     return { data: userImages };
