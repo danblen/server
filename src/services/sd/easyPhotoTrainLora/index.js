@@ -31,7 +31,7 @@ export default async (req, res) => {
 
   try {
     const userTrainDataPath = path.join(
-      '/home/ubuntu/code/server/static/userTrainImage',
+      '/home/ubuntu/code/server/static/trainPic',
       userId
     );
     if (!fs.existsSync(userTrainDataPath)) {
@@ -48,11 +48,12 @@ export default async (req, res) => {
 
     let userTrainPic = [];
     for (let i = 0; i < userTrainImages.length; i++) {
-      const imagePath = await saveBase64Image(
+      let imagePath = await saveBase64Image(
         userTrainImages[i],
         userTrainDataPath,
-        `image_${i + 1}.jpg`
+        `pic_${i + 1}.jpg`
       );
+      imagePath = imagePath.replace(STATIC_DIR, '');
       console.log('imagePath', imagePath);
       userTrainPic.push(imagePath);
     }
@@ -64,7 +65,6 @@ export default async (req, res) => {
     if (!user) {
       return { data: 'check userId' }; // 数据不存在
     }
-
     let updateUser = await prisma.User.update({
       where: {
         userId,

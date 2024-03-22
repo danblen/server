@@ -8,6 +8,36 @@ import {
 } from '../../common/processQueueSql.js';
 import prisma from '../../../db/prisma.js';
 import { addUserPoints } from '../../common/userPoints.js';
+import { ENV, STATIC_DIR } from '../../../config/index.js';
+import { generatProcess } from '../easyPhotoSwapFace/generated.js';
+
+function getRandomImageByGender(filePath, gender) {
+  if (!filePath || !gender) {
+    console.error('文件路径和性别不能为空');
+    return null;
+  }
+
+  // 根据性别选择文件夹
+  const genderFolder = gender === 'male' ? 'male_images' : 'female_images';
+
+  // 构建完整的路径
+  const fullPath = `${filePath}/${genderFolder}`;
+
+  // 读取文件夹中的所有文件
+  const files = fs.readdirSync(fullPath);
+
+  // 如果文件夹为空，返回空
+  if (files.length === 0) {
+    console.error('文件夹中没有图片');
+    return null;
+  }
+
+  // 从文件数组中随机选择一个索引
+  const randomIndex = Math.floor(Math.random() * files.length);
+
+  // 返回随机选择的图片路径
+  return `${fullPath}/${files[randomIndex]}`;
+}
 
 async function readImagesFromPath(userTrainImagesPath) {
   try {
@@ -33,6 +63,7 @@ export async function trainProcess(
   usePoint,
   userTrainDataPath
 ) {
+  await deleteTaskInSDRunningTasks(requestId);
   try {
     const encodedImages = await readImagesFromPath(userTrainDataPath);
     const currentTime = DateTime.now().toFormat('yyyyMMddHHmm');
@@ -43,7 +74,7 @@ export async function trainProcess(
       sd_model_checkpoint: 'Chilloutmix-Ni-pruned-fp16-fix.safetensors',
       resolution: 512,
       val_and_checkpointing_steps: 100,
-      max_train_steps: 10,
+      max_train_steps: 500,
       steps_per_photos: 100,
       train_batch_size: 1,
       gradient_accumulation_steps: 4,
@@ -54,9 +85,9 @@ export async function trainProcess(
       instance_images: encodedImages,
     });
 
-    console.log('start post easyphoto_train_forward');
     const response = await axios.post(
-      'https://u349479-b416-03e0f33d.westb.seetacloud.com:8443/easyphoto/easyphoto_train_forward',
+      // 'https://u349479-9b28-2e3e9701.westb.seetacloud.com:8443/easyphoto/easyphoto_train_forward',
+      `${ENV.GPU_HOST}/easyphoto/easyphoto_train_forward`,
       requestData,
       {
         headers: {
@@ -77,7 +108,6 @@ export async function trainProcess(
         'train',
         response
       );
-      await deleteTaskInSDRunningTasks(requestId);
       addUserPoints(userId, usePoint);
 
       await prisma.user.update({
@@ -92,28 +122,48 @@ export async function trainProcess(
       return false;
     }
 
-    // Update user's loraName
-    await prisma.user.update({
+    const userData = await prisma.User.findUnique({
       where: {
         userId,
       },
-      data: {
-        loraName,
-        loraStatus: 'done',
-      },
     });
-
-    await addGenImageInUserProcessImageData(
-      userId,
-      requestId,
-      usePoint,
-      null,
-      null,
-      null,
-      'train',
-      'finishing'
+    const genderFilePath = getRandomImageByGender(
+      STATIC_DIR + '/genderLoraPic',
+      userData.userGender
     );
-    await deleteTaskInSDRunningTasks(requestId);
+    console.log('genderFilePath', genderFilePath);
+    const processRes = await generatProcess(
+      userId,
+      '-1',
+      0,
+      genderFilePath,
+      loraName
+    );
+    if (processRes) {
+      console.log('processRes.outputFilePaths', processRes.outputFilePaths);
+      // Update user's loraName
+      await prisma.user.update({
+        where: {
+          userId,
+        },
+        data: {
+          loraName,
+          loraStatus: 'done',
+          loraPic: processRes.outputFilePaths,
+        },
+      });
+    }
+
+    // await addGenImageInUserProcessImageData(
+    //   userId,
+    //   requestId,
+    //   usePoint,
+    //   null,
+    //   null,
+    //   null,
+    //   'train',
+    //   'finishing'
+    // );
   } catch (error) {
     console.log('Error occurred during training:', error.message);
     addUserPoints(userId, usePoint);
@@ -127,7 +177,6 @@ export async function trainProcess(
       'train',
       error.message
     );
-    await deleteTaskInSDRunningTasks(requestId);
     await prisma.user.update({
       where: {
         userId,

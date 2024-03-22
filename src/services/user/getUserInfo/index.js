@@ -48,6 +48,7 @@ export default async (req, res) => {
           userName: userSql.userName,
           loraPic: userSql.loraPic,
           loraStatus: userSql.loraStatus,
+          userGender: userSql.userGender,
         },
       };
     }
@@ -66,6 +67,7 @@ export default async (req, res) => {
         userName: user.userName,
         loraPic: user.loraPic,
         loraStatus: user.loraStatus,
+        userGender: user.userGender,
       },
     };
   }

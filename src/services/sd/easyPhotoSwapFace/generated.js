@@ -22,6 +22,13 @@ function isValidUrl(url) {
   }
 }
 
+export function generateUniqueId() {
+  const timestamp = new Date().getTime(); // 获取当前时间戳
+  const random = Math.floor(Math.random() * 10000); // 生成0到9999之间的随机数
+  const uniqueId = timestamp.toString() + random.toString(); // 将时间戳和随机数拼接成唯一ID
+  return uniqueId;
+}
+
 // 发送图像数据到 GPU 进行处理
 async function forwardToGPU(encodedImage, loraName) {
   const requestData = {
@@ -46,7 +53,7 @@ async function forwardToGPU(encodedImage, loraName) {
   };
 
   const response = await axios.post(
-    'https://u349479-b416-03e0f33d.westb.seetacloud.com:8443/easyphoto/easyphoto_infer_forward',
+    `${ENV.GPU_HOST}/easyphoto/easyphoto_infer_forward`,
     requestData
   );
 
@@ -93,10 +100,27 @@ async function processImage(encodedImage, loraName, userId) {
       };
     } else {
       console.log(`No outputs image`);
-      return { message: message, status: 500 };
+      return { message: message, status: 500, outputFilePaths: null };
     }
   } catch (error) {
     console.error(`Error occurred while processing image:`, error);
+    throw error; // 抛出错误以便上层函数捕获
+  }
+}
+
+// 处理本地图片
+async function processImagePath(imagePath, loraName, userId) {
+  try {
+    // 读取本地文件数据
+    const imageData = await fs.promises.readFile(imagePath);
+    // 将获取的图片数据转换为 base64 字符串
+    const base64Image = Buffer.from(imageData).toString('base64');
+    return await processImage(base64Image, loraName, userId);
+  } catch (error) {
+    console.error(
+      `Error occurred while processing image from path ${imagePath}:`,
+      error.message
+    );
     throw error; // 抛出错误以便上层函数捕获
   }
 }
@@ -127,15 +151,24 @@ export async function generatProcess(
   imageUrls,
   loraName
 ) {
+  if (requestId != '-1') {
+    await deleteTaskInSDRunningTasks(requestId);
+  } else {
+    requestId = generateUniqueId();
+  }
   try {
     let processRes = null;
     if (isValidUrl(imageUrls)) {
       // 处理远程图片
       processRes = await processImageUrl(imageUrls, loraName, userId);
       console.log('processImageUrl:', processRes);
+    } else if (fs.existsSync(imageUrls)) {
+      // 处理本地文件路径
+      processRes = await processImagePath(imageUrls, loraName, userId);
+      console.log('processImagePath:', processRes);
     } else {
-      console.log('images url does not exist:', imageUrls);
-      throw new Error('File or directory does not exist'); // 抛出错误以便上层函数捕获
+      console.log('Image URL or path does not exist:', imageUrls);
+      throw new Error('File or URL does not exist');
     }
     if (processRes.status != 200) {
       addUserPoints(userId, usePoint);
@@ -149,9 +182,13 @@ export async function generatProcess(
         'loraFace',
         processRes.message
       );
-      await deleteTaskInSDRunningTasks(requestId);
-      return false;
+      return null;
     }
+
+    processRes.outputFilePaths = processRes?.outputFilePaths?.replace(
+      STATIC_DIR,
+      ''
+    );
     await addGenImageInUserProcessImageData(
       userId,
       requestId,
@@ -162,8 +199,7 @@ export async function generatProcess(
       'loraFace',
       'finishing'
     );
-    await deleteTaskInSDRunningTasks(requestId);
-    return true;
+    return processRes;
   } catch (error) {
     console.log('Error occurred during training:', error.message);
     addUserPoints(userId, usePoint);
@@ -177,7 +213,6 @@ export async function generatProcess(
       'train',
       error.message
     );
-    await deleteTaskInSDRunningTasks(requestId);
-    return false;
+    return null;
   }
 }

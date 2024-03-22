@@ -114,6 +114,7 @@ export default async (reqBody, res) => {
         token: generateToken(newUser),
         loraPic: newUser.loraPic,
         loraStatus: newUser.loraStatus,
+        userGender: newUser.userGender,
       };
       return { data: userInfo };
     } else {
@@ -140,6 +141,7 @@ export default async (reqBody, res) => {
         userHeadPic: updatedMomentPics,
         loraPic: user.loraPic,
         loraStatus: user.loraStatus,
+        userGender: user.userGender,
       };
       return { data: userInfo };
     }
