@@ -1,13 +1,12 @@
+import axios from 'axios';
 import { saveBase64Image } from '../../common/file.js';
 import { ENV } from '../../config/index.js';
 
-export async function saveImageToServer() {
+export async function saveImageToServer({ imageBase64, dir, filename }) {
   try {
-    let response = await axios.post(
-      `${ENV.SERVER_HOST}:${ENV.SERVER_PORT}/${ENV.API_TYPE}/saveImageToServerApi`,
-      data
-    );
-    if (response.success) {
+    let url = `${ENV.SERVER_HOST}/v1/saveImageToServerApi`;
+    let response = await axios.post(url, { imageBase64, dir, filename });
+    if (response?.data?.success) {
       return { success: true, message: 'Image saved successfully' };
     } else {
       return { success: false, message: 'Error in saving image' };
