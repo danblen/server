@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { saveBase64Image } from '../../common/file.js';
-import { ENV } from '../../config/index.js';
+import { ENV, STATIC_DIR } from '../../config/index.js';
 
 export async function saveImageToServer({ imageBase64, dir, filename }) {
   try {
@@ -18,7 +18,7 @@ export async function saveImageToServer({ imageBase64, dir, filename }) {
 
 export default async (req) => {
   const { imageBase64, dir, filename } = req.body;
-  let res = await saveBase64Image(imageBase64, dir, filename);
+  let res = await saveBase64Image(imageBase64, STATIC_DIR + dir, filename);
   if (!res) {
     return {
       success: true,
