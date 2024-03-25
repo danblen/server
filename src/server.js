@@ -13,25 +13,6 @@ const requestLimit = '5120kb';
 // 临时 IP 黑名单
 const tempBlackIpList = [];
 
-// 启动处理 pending 任务的子进程
-const childProcess = spawn('node', [
-  '/home/ubuntu/code/server/src/pendingTaskProcess.js',
-]);
-
-// 监听子进程的 stdout 输出
-childProcess.stdout.on('data', (data) => {
-  console.log(`[Child Process - stdout]: ${data}`);
-});
-
-// 监听子进程的 stderr 输出
-childProcess.stderr.on('data', (data) => {
-  console.error(`[Child Process - stderr]: ${data}`);
-});
-
-// 监听子进程的退出事件
-childProcess.on('exit', (code) => {
-  console.log(`Child process exited with code ${code}`);
-});
 class CloudBaseRunServer {
   constructor() {
     this.server = express();

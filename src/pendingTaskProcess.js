@@ -8,6 +8,8 @@ import { trainProcess } from './services/sd/easyPhotoTrainLora/trainLora.js';
 import { generatProcess } from './services/sd/easyPhotoSwapFace/generated.js';
 import { img2imgProcess } from './services/sd/img2img/img2imgProcess.js';
 import { txt2imgProcess } from './services/sd/txt2img/txt2imgProcess.js';
+import { spawn } from 'child_process';
+import { projectRoot } from './config/index.js';
 
 let pendingTasksCount = 0; // 记录挂起任务的数量
 
@@ -101,3 +103,25 @@ function sleep(ms) {
 
 // 启动处理 pending 任务的函数
 pendingTaskProcess();
+
+export function startPendingTaskProcess() {
+  // 启动处理 pending 任务的子进程
+  const childProcess = spawn('node', [
+    projectRoot + '/src/pendingTaskProcess.js',
+  ]);
+
+  // 监听子进程的 stdout 输出
+  childProcess.stdout.on('data', (data) => {
+    console.log(`[Child Process - stdout]: ${data}`);
+  });
+
+  // 监听子进程的 stderr 输出
+  childProcess.stderr.on('data', (data) => {
+    console.error(`[Child Process - stderr]: ${data}`);
+  });
+
+  // 监听子进程的退出事件
+  childProcess.on('exit', (code) => {
+    console.log(`Child process exited with code ${code}`);
+  });
+}

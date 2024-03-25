@@ -45,6 +45,8 @@ import {
   saveImageToServerApi,
   saveImageToServerInternalApi,
 } from './services/common/saveImageToServerApi.js';
+import { startPendingTaskProcess } from './pendingTaskProcess.js';
+startPendingTaskProcess();
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
 
