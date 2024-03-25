@@ -41,7 +41,10 @@ import update from './services/image/getImages/update.js';
 import getImages from './services/image/getImages/index.js';
 import getAppImages from './services/image/getAllImages/getAppImages.js';
 import enqueue from './services/sd/enqueue/index.js';
-import saveImageToServerApi from './services/common/saveImageToServerApi.js';
+import {
+  saveImageToServerApi,
+  saveImageToServerInternalApi,
+} from './services/common/saveImageToServerApi.js';
 // 创建云托管 Server 实例
 const server = new CloudBaseRunServer();
 
@@ -72,6 +75,7 @@ const routes = [
   ['/update', update],
   ['/enqueue', enqueue],
   ['/saveImageToServerApi', saveImageToServerApi],
+  ['/saveImageToServerInternalApi', saveImageToServerInternalApi],
   ['/getAppImages', getAppImages],
   ['/getImages', getImages],
   ['/easyPhotoTrainLora', easyPhotoTrainLora],

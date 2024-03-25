@@ -4,7 +4,7 @@ import { ENV, STATIC_DIR } from '../../config/index.js';
 
 export async function saveImageToServer({ imageBase64, dir, filename }) {
   try {
-    let url = `${ENV.SERVER_HOST}/v1/saveImageToServerApi`;
+    let url = `${ENV.SERVER_HOST}/v1/saveImageToServerInternalApi`;
     let response = await axios.post(url, { imageBase64, dir, filename });
     if (response?.data?.success) {
       return { success: true, message: 'Image saved successfully' };
@@ -15,8 +15,12 @@ export async function saveImageToServer({ imageBase64, dir, filename }) {
     return { success: false, message: 'Error in saving image' };
   }
 }
+export async function saveImageToServerApi(req) {
+  const { imageBase64, dir, filename } = req.body;
+  return saveImageToServer({ imageBase64, dir, filename });
+}
 
-export default async (req) => {
+export async function saveImageToServerInternalApi(req) {
   const { imageBase64, dir, filename } = req.body;
   let res = await saveBase64Image(imageBase64, STATIC_DIR + dir, filename);
   if (res) {
@@ -30,4 +34,4 @@ export default async (req) => {
       message: 'Error saving image',
     };
   }
-};
+}
