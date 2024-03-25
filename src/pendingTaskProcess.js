@@ -16,15 +16,20 @@ export async function pendingTaskProcess() {
   while (true) {
     try {
       // 只有在没有挂起任务或挂起任务数量为0时才查询数据库获取挂起任务数量
-      if (pendingTasksCount === 0) {
-        pendingTasksCount = await processQueue.getPendingTasksCount();
-        // console.log('pendingTasksCount ', pendingTasksCount);
-      }
+      // if (pendingTasksCount === 0) {
+      //   pendingTasksCount = await processQueue.getPendingTasksCount();
 
+      //   if (pendingTasksCount) {
+      //     console.log('pendingTasksCount ', pendingTasksCount);
+      //   }
+      // }
+
+      const pendingTask = await processQueue.getEarliestPendingTask();
       // 如果有挂起任务，则获取最早的挂起任务
-      if (pendingTasksCount > 0) {
-        const pendingTask = await processQueue.getEarliestPendingTask();
+      if (pendingTask) {
+        // const pendingTask = await processQueue.getEarliestPendingTask();
 
+        console.log('start task', pendingTask);
         // 处理挂起任务
         if (
           pendingTask &&
@@ -56,7 +61,7 @@ export async function pendingTaskProcess() {
               pendingTask.usePoint,
               pendingTask.img2imgreqData,
               pendingTask.mainImagePath,
-              pendingTask.roopImagePath
+              pendingTask.roopImagePath ? pendingTask.roopImagePath : null
             );
           } else if (pendingTask.imageType === 'txt2img') {
             console.log('start task', pendingTask.imageType);
@@ -75,11 +80,12 @@ export async function pendingTaskProcess() {
           }
           await sleep(200);
         }
+        // console.log('pendingTasksCount sub ', pendingTasksCount);
 
-        pendingTasksCount--; // 处理完一个挂起任务后，减少挂起任务数量
+        // pendingTasksCount--; // 处理完一个挂起任务后，减少挂起任务数量
       } else {
         // console.log('have not pending tasks:');
-        await sleep(1000);
+        await sleep(300);
       }
     } catch (error) {
       console.error('Error occurred while processing pending tasks:', error);

@@ -8,7 +8,7 @@ import { api } from './api.js';
 
 const interval = 5000;
 let loopCount = 0;
-run();
+// run();
 async function run() {
   try {
     const tasksCount = await prisma.tasks.count();

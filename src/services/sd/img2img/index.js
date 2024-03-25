@@ -25,17 +25,30 @@ export default async (req) => {
     }
     const now = Date.now();
     const date = format(new Date(), 'yyyy-MM-dd');
+    // if (sdParams?.init_images) {
+    const mainImageDir = path.join(STATIC_DIR, '/userImages', userId, date);
+    const mainFile = `${now}main.png`;
+    const path123 = await saveBase64Image(
+      sdParams.init_images[0],
+      mainImageDir,
+      mainFile
+    );
+    console.log('12312312312', path123);
+    sdParams.init_images[0] = path123;
+    // }
     // const mainImageDir = path.join(STATIC_DIR, '/userImages', userId, date);
     // const mainFile = `${now}main.png`;
     // saveBase64Image(sdParams.init_images[0], mainImageDir, mainFile);
-    const roopImageDir = path.join(STATIC_DIR, '/userImages', userId, date);
-    const roopFile = `${now}roop.png`;
-    saveBase64Image(
-      sdParams.alwayson_scripts?.roop.args[0],
-      roopImageDir,
-      roopFile
-    );
+    let roopImageDir;
+    let roopFile;
     if (sdParams?.alwayson_scripts?.roop?.args) {
+      roopImageDir = path.join(STATIC_DIR, '/userImages', userId, date);
+      roopFile = `${now}roop.png`;
+      await saveBase64Image(
+        sdParams.alwayson_scripts?.roop.args[0],
+        roopImageDir,
+        roopFile
+      );
       sdParams.alwayson_scripts.roop.args[0] = '000';
     }
     const img2imgreqData = JSON.stringify(sdParams);

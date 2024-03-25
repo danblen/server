@@ -11,6 +11,15 @@ import path from 'path';
 import { format } from 'date-fns';
 import { saveBase64Image } from '../../../common/file.js';
 
+// 辅助函数：检查是否为有效 URL
+function isValidUrl(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 // 调用sd接口，查询换脸结果
 export async function img2imgProcess(
   userId,
@@ -20,22 +29,30 @@ export async function img2imgProcess(
   mainImageDir,
   roopImageDir
 ) {
+  await deleteTaskInSDRunningTasks(requestId);
   try {
-    const imageData = fs.readFileSync(roopImageDir, 'base64');
+    const sdParams = JSON.parse(img2imgreqData);
     if (img2imgreqData?.alwayson_scripts?.roop?.args) {
       img2imgreqData.alwayson_scripts.roop.args[0] = imageData;
       console.log(img2imgreqData.alwayson_scripts.roop.args[0].slice(0, 20));
     }
 
-    const sdParams = JSON.parse(img2imgreqData);
+    if (mainImageDir && !isValidUrl(mainImageDir)) {
+      const imageData = fs.readFileSync(mainImageDir, 'base64');
+      sdParams.init_images[0] = imageData;
+    }
     if (sdParams?.alwayson_scripts?.roop?.args) {
+      const imageData = fs.readFileSync(roopImageDir, 'base64');
       sdParams.alwayson_scripts.roop.args[0] = imageData;
     }
-    let res = await axios.post(`${ENV.GPU_HOST}/sdapi/v1/img2img`, sdParams);
-    console.log('out:', res.data);
+    let res = await axios.post(
+      `https://u349479-89bd-0be97fcd.westb.seetacloud.com:8443/sdapi/v1/img2img`,
+      sdParams
+    );
+    // console.log('out:', res.data.message);
     if (res?.data) {
       const relativePathDir = path.join(
-        '/sd_make_images',
+        '/userImages',
         userId,
         format(new Date(), 'yyyy-MM-dd')
       );
@@ -45,24 +62,22 @@ export async function img2imgProcess(
         STATIC_DIR + relativePathDir,
         fileName
       );
-      console.log(saveUrl);
+      console.log('outfile :', saveUrl);
       await addGenImageInUserProcessImageData(
         userId,
         requestId,
         usePoint,
         mainImageDir,
         roopImageDir,
-        STATIC_DIR + relativePathDir + '/' + fileName,
+        saveUrl.replace(STATIC_DIR, ''),
         'img2img',
         'finishing'
       );
-      await deleteTaskInSDRunningTasks(requestId);
       return {
         data: { imageUrl: ENV.URL_STATIC + relativePathDir + '/' + fileName },
       };
     }
 
-    console.log('Error occurred during img2img:', error.message);
     addUserPoints(userId, usePoint);
     await addGenImageInUserProcessImageData(
       userId,
@@ -74,7 +89,6 @@ export async function img2imgProcess(
       'img2img',
       error.message
     );
-    await deleteTaskInSDRunningTasks(requestId);
     return false;
   } catch (error) {
     console.log('Error occurred during img2img:', error.message);
@@ -89,7 +103,6 @@ export async function img2imgProcess(
       'img2img',
       error.message
     );
-    await deleteTaskInSDRunningTasks(requestId);
     return false;
   }
 }

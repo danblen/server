@@ -75,9 +75,9 @@ export async function trainProcess(
       resolution: 512,
       val_and_checkpointing_steps: 100,
       max_train_steps: 500,
-      steps_per_photos: 100,
-      train_batch_size: 1,
-      gradient_accumulation_steps: 4,
+      steps_per_photos: 200,
+      train_batch_size: 8,
+      gradient_accumulation_steps: 1,
       dataloader_num_workers: 16,
       learning_rate: 1e-4,
       rank: 64,
@@ -86,16 +86,17 @@ export async function trainProcess(
     });
 
     const response = await axios.post(
-      // 'https://u349479-9b28-2e3e9701.westb.seetacloud.com:8443/easyphoto/easyphoto_train_forward',
-      `${ENV.GPU_HOST}/easyphoto/easyphoto_train_forward`,
+      'https://u349479-89bd-0be97fcd.westb.seetacloud.com:8443/easyphoto/easyphoto_train_forward',
+      // `${ENV.GPU_HOST}/easyphoto/easyphoto_train_forward`,
       requestData,
       {
         headers: {
           'Content-Type': 'application/json',
         },
+        // timeout: 1800000, // 设置超时时间为30分钟
       }
     );
-    console.log('response', response.data);
+    // console.log('response', response.data);
     if (response.data.message != 'The training has been completed.') {
       console.log('response', response);
       await addGenImageInUserProcessImageData(
@@ -152,6 +153,17 @@ export async function trainProcess(
           loraPic: processRes.outputFilePaths,
         },
       });
+    } else {
+      await prisma.user.update({
+        where: {
+          userId,
+        },
+        data: {
+          loraName: '',
+          loraStatus: 'error',
+          loraPic: '',
+        },
+      });
     }
 
     // await addGenImageInUserProcessImageData(
@@ -165,7 +177,7 @@ export async function trainProcess(
     //   'finishing'
     // );
   } catch (error) {
-    console.log('Error occurred during training:', error.message);
+    console.log('Error occurred during training:', error);
     addUserPoints(userId, usePoint);
     await addGenImageInUserProcessImageData(
       userId,

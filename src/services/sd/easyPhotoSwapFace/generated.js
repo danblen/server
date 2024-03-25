@@ -51,9 +51,10 @@ async function forwardToGPU(encodedImage, loraName) {
     background_restore: false,
     tabs: 1,
   };
-
+  console.log('1231', ENV.GPU_HOST);
   const response = await axios.post(
-    `${ENV.GPU_HOST}/easyphoto/easyphoto_infer_forward`,
+    'https://u349479-89bd-0be97fcd.westb.seetacloud.com:8443/easyphoto/easyphoto_infer_forward',
+    // `${ENV.GPU_HOST}/easyphoto/easyphoto_infer_forward`,
     requestData
   );
 
