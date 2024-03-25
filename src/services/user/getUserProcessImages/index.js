@@ -27,22 +27,27 @@ export default async (req, res) => {
   // } catch (error) {
   //   console.log(error);
   // }
-  const userImages = await prisma.userProcessImageData.findMany({
+
+  // 成功了的放到这个表里，默认状态是成功
+  const finishedImages = await prisma.userProcessImageData.findMany({
     where: {
       userId,
-      requestStatus: 'finishing',
+      // requestStatus: 'finishing',
     },
   });
-  userImages
+  const pendingImages = await prisma.tasks.findMany({
+    where: {
+      userId,
+      status: {
+        in: ['pending', 'waiting'],
+      },
+    },
+  });
+  finishedImages
     .filter((item) => item.outputImagePath)
     .map((item) => {
       item.outputImagePath = ENV.URL_STATIC + item.outputImagePath;
       return item;
     });
-  if (userImages) {
-    // 如果找到了，返回用户的历史生成的作品图片
-    return { data: userImages };
-  } else {
-    return { data: null };
-  }
+  return { data: { finishedImages, pendingImages } };
 };

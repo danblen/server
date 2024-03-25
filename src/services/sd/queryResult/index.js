@@ -5,6 +5,16 @@ import fs from 'fs';
 import { format } from 'date-fns';
 import { projectRoot } from '../../../config/index.js';
 
+export default async (req, res) => {
+  const images = await prisma.userProcessImageData.findUnique({
+    where: {
+      requestId: {
+        in: req.body.requestIds,
+      },
+    },
+  });
+  return { data: images };
+};
 // 积分需要减1
 async function updataUserInfo(userId, requestId) {
   const processInfo = await prisma.userProcessImageData.findUnique({
@@ -25,31 +35,31 @@ async function updataUserInfo(userId, requestId) {
   });
 }
 // 查询换脸结果接口
-export default async (req, res) => {
-  try {
-    const { userId, requestId } = req.body;
-    const res = await forwardToGPU({
-      user_id: userId,
-      request_id: requestId,
-      sql_query: {
-        request_status: '',
-        user_id: '',
-      },
-    });
-    if (res.data.status === 'finishing') {
-      updataUserInfo(userId, requestId);
-      const { fullPath, relativePath } = getPathAndMakeDir(requestId, userId);
-      saveImageData(res.data, userId, fullPath);
-      return { data: { status: res.data.status, imageUrl: relativePath } };
-    }
-    return { data: { status: res.data.status, imageUrl: '' } };
-  } catch (error) {
-    console.error('Error querying data from SQL:', error.message);
-    return { data: error.message };
-  } finally {
-    await prisma.$disconnect();
-  }
-};
+// export default async (req, res) => {
+//   try {
+//     const { userId, requestId } = req.body;
+//     const res = await forwardToGPU({
+//       user_id: userId,
+//       request_id: requestId,
+//       sql_query: {
+//         request_status: '',
+//         user_id: '',
+//       },
+//     });
+//     if (res.data.status === 'finishing') {
+//       updataUserInfo(userId, requestId);
+//       const { fullPath, relativePath } = getPathAndMakeDir(requestId, userId);
+//       saveImageData(res.data, userId, fullPath);
+//       return { data: { status: res.data.status, imageUrl: relativePath } };
+//     }
+//     return { data: { status: res.data.status, imageUrl: '' } };
+//   } catch (error) {
+//     console.error('Error querying data from SQL:', error.message);
+//     return { data: error.message };
+//   } finally {
+//     await prisma.$disconnect();
+//   }
+// };
 
 const uploadDirectory = projectRoot + '/static/sd_make_images/'; // 定义绝对路径
 const staticDirectory = projectRoot + '/static';
