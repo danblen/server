@@ -6,14 +6,12 @@ import { format } from 'date-fns';
 import { projectRoot } from '../../../config/index.js';
 
 export default async (req, res) => {
-  const images = await prisma.userProcessImageData.findUnique({
+  const image = await prisma.userProcessImageData.findUnique({
     where: {
-      requestId: {
-        in: req.body.requestIds,
-      },
+      requestId: req.body.requestId,
     },
   });
-  return { data: images };
+  return { data: image };
 };
 // 积分需要减1
 async function updataUserInfo(userId, requestId) {
