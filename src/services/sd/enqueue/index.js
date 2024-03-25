@@ -7,11 +7,6 @@ import taskManager from './taskManager.js';
 
 export default async (req) => {
   const { userId, usePoint = 1, taskType, requestId = '', sdParams } = req.body;
-  // let response = await axios.post(
-  //   `${ENV.GPU_HOST}/agent-scheduler/v1/queue/txt2img`,
-  //   sdParams
-  // );
-  // return;
   if (!userId || !requestId) {
     return { message: 'no userId' };
   }

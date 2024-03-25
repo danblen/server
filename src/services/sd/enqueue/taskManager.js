@@ -1,53 +1,80 @@
+import axios from 'axios';
 import { format } from 'date-fns';
-import { saveBase64Image } from '../../../common/file.js';
-import { STATIC_DIR } from '../../../config/index.js';
-import prisma from '../../../db/prisma.js';
-import { api } from './api.js';
 import path from 'path';
+import { ENV } from '../../../config/index.js';
+import prisma from '../../../db/prisma.js';
+import { saveImageToServer } from '../../common/saveImageToServerApi.js';
+import { api } from './api.js';
 
-// runWaitingTasks();
-// updatePendingTasks();
-// getDoneTaskResults();
+const interval = 5000;
+let loopCount = 0;
+run();
+async function run() {
+  try {
+    const tasksCount = await prisma.tasks.count();
+    if (tasksCount === 0) {
+      return;
+    }
 
-export async function runWaitingTasks() {
+    // const res = await axios.get(ENV.GPU_HOST);
+    // const gpuReady = res?.status === 200;
+    // if (!gpuReady) {
+    //   return;
+    // }
+    loopCount++;
+    console.log(`开始下一轮:loopCount =${loopCount}, tasksCount=${tasksCount}`);
+    await runWaitingTasks();
+    await updatePendingTasks();
+    await getDoneTaskResults();
+    console.log('一轮执行结束');
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+  setTimeout(run, interval);
+}
+async function runWaitingTasks() {
   const tasks = await prisma.tasks.findMany({
     where: {
       status: 'waiting',
     },
-    take: 100, // 限制获取的记录数为100
+    take: 3,
   });
 
-  const promises = tasks.map(async (task) => {
-    const { type, requestId, sdParams, taskType } = task;
-    const params = JSON.parse(sdParams);
-    let updatedTaskId = null; // 用于存储每个任务的 taskId
-    if (taskType === 'img2img') {
-      const res = await api['img2img'](params);
-      updatedTaskId = res.data.task_id;
-    } else if (taskType === 'txt2img') {
-      const res = await api['txt2img'](params);
-      updatedTaskId = res.data.task_id;
-    }
-    return [requestId, updatedTaskId]; // 返回更新后的 taskId
-  });
+  // for (const task of tasks) {
+  await Promise.all(
+    tasks.map(async (task) => {
+      try {
+        const { type, requestId, sdParams, taskType } = task;
+        let params;
+        try {
+          params = JSON.parse(sdParams);
+        } catch (error) {
+          // continue;
+          return;
+        }
 
-  const ids = await Promise.all(promises);
+        let taskId = '';
+        if (taskType === 'img2img') {
+          const res = await api['img2img'](params);
+          taskId = res?.data?.task_id;
+        } else if (taskType === 'txt2img') {
+          const res = await api['txt2img'](params);
+          taskId = res?.data?.task_id;
+        }
 
-  const updatePromises = ids.map(([requestId, taskId]) =>
-    prisma.tasks.update({
-      where: {
-        requestId: requestId,
-      },
-      data: {
-        taskId,
-        status: 'pending',
-      },
+        if (taskId) {
+          await prisma.tasks.update({
+            where: { requestId: requestId },
+            data: { taskId, status: 'pending' },
+          });
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
     })
   );
-
-  await Promise.all(updatePromises);
-
-  return {}; // 返回所有任务的更新后的 taskId
+  // }
+  await prisma.$disconnect();
 }
 
 export default async function updatePendingTasks() {
@@ -55,86 +82,103 @@ export default async function updatePendingTasks() {
     where: {
       status: 'pending',
     },
-    take: 100, // 限制获取的记录数为100
   });
 
-  const promises = tasks.map(async (task) => {
-    const { type, requestId, taskId, taskType } = task;
-    const res = await api['getTask'](taskId);
-    if (res.data.data) {
-      return { requestId, data: res.data.data, taskId }; // ; // 返回更新后的 taskId
-    }
-    return { requestId, data: {}, taskId };
-  });
+  if (tasks.length === 0) {
+    await prisma.$disconnect();
+    return {};
+  }
 
-  const restasks = await Promise.all(promises);
-  const taskIds = restasks.filter(({ data }) => data?.status === 'done'); // 过滤出已完成的任务
+  // 并行处理所有的任务
+  await Promise.all(
+    tasks.map(async (task) => {
+      const { requestId, taskId } = task;
+      const res = await api['getTask'](taskId);
 
-  const updatePromises = taskIds.map(({ requestId, data, taskId }) =>
-    prisma.tasks.update({
-      where: {
-        requestId,
-      },
-      data: {
-        data: data.result,
-        status: 'done',
-      },
+      if (res?.data?.data?.status === 'done') {
+        return prisma.tasks.update({
+          where: { requestId },
+          data: { data: res.data.data.result, status: 'done' },
+        });
+      } else if (res?.data?.data?.status === 'failed') {
+        return prisma.tasks.update({
+          where: { requestId },
+          data: { status: 'failed' },
+        });
+      }
     })
   );
-  const updateData = await Promise.all(updatePromises);
-  updateData;
 
-  return {}; // 返回所有任务的更新后的 taskId
+  await prisma.$disconnect();
+  return {};
 }
+
 export async function getDoneTaskResults() {
   const tasks = await prisma.tasks.findMany({
     where: {
       status: 'done',
     },
-    take: 100, // 限制获取的记录数为100
+    // take: 100, // 限制获取的记录数为100
   });
   if (tasks.length === 0) {
+    await prisma.$disconnect();
     return {};
   }
-  const promises = tasks.map(async (task) => {
-    const { type, requestId, taskId, data, userId } = task;
+  for (const task of tasks) {
+    const { type, requestId, taskId, data, userId, usePoint } = task;
     const res = await api['getTaskResults'](taskId);
-    let image;
-    let filePath;
-    if (res?.data?.data) {
-      try {
-        filePath = JSON.parse(data).images[0];
-        image = res.data.data[0].image;
-      } catch (error) {}
+
+    if (res?.data?.data?.length === 0) {
+      await prisma.tasks.update({
+        where: { requestId },
+        data: { status: 'waiting' },
+      });
+      continue;
     }
+
+    let image, filePath;
+    try {
+      filePath = JSON.parse(data).images[0];
+      image = res.data.data[0].image;
+    } catch (error) {}
+
     if (filePath && image) {
       filePath = filePath.replace('/root/autodl-tmp', '');
-      await saveBase64Image(
-        image,
-        STATIC_DIR + path.dirname(filePath),
-        path.basename(filePath)
-      );
-      return { type, requestId, filePath, taskId, userId };
+      await saveImageToServer({
+        imageBase64: image,
+        dir: path.dirname(filePath),
+        filename: path.basename(filePath),
+      });
     }
-    return { type, requestId, filePath: '', taskId, userId };
-  });
-  let restasks = await Promise.all(promises);
-  restasks = restasks.filter(({ filePath }) => filePath); // 过滤出已完成的任务
-  await prisma.userProcessImageData.createMany({
-    data: restasks.map(({ type, requestId, filePath, taskId, userId }) => ({
-      outputImagePath: filePath,
-      userId,
-      requestId,
-      createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-    })),
-  });
-  await prisma.tasks.deleteMany({
-    where: {
-      taskId: {
-        in: restasks.map(({ taskId }) => taskId),
-      },
-    },
-  });
 
-  return {}; // 返回所有任务的更新后的 taskId
+    try {
+      await prisma.userProcessImageData.upsert({
+        where: {
+          requestId,
+        },
+        update: {
+          outputImagePath: filePath,
+        },
+        create: {
+          outputImagePath: filePath,
+          imageType: 'img2img',
+          userId,
+          requestId,
+          requestStatus: 'finishing',
+          createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+          usePoint,
+        },
+      });
+
+      await prisma.tasks.delete({
+        where: {
+          requestId,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  await prisma.$disconnect();
+  return {};
 }
