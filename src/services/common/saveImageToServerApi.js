@@ -4,7 +4,7 @@ import { ENV, STATIC_DIR } from '../../config/index.js';
 
 export async function saveImageToServer({ imageBase64, dir, filename }) {
   try {
-    let url = `${ENV.SERVER_HOST}/test/saveImageToServerApi`;
+    let url = `${ENV.SERVER_HOST}/v1/saveImageToServerApi`;
     let response = await axios.post(url, { imageBase64, dir, filename });
     if (response?.data?.success) {
       return { success: true, message: 'Image saved successfully' };
