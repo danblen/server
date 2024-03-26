@@ -26,8 +26,8 @@ async function run() {
     loopCount++;
     console.log(`开始下一轮:loopCount =${loopCount}, tasksCount=${tasksCount}`);
     await runWaitingTasks();
-    await updatePendingTasks();
-    await getDoneTaskResults();
+    updatePendingTasks();
+    getDoneTaskResults();
     console.log('一轮执行结束');
   } catch (error) {
     console.error('An error occurred:', error);
@@ -53,6 +53,9 @@ async function runWaitingTasks() {
         let params;
         try {
           params = JSON.parse(sdParams);
+          if (typeof params === 'string') {
+            params = JSON.parse(params);
+          }
           params.alwayson_scripts.roop.args[0] = await downloadImageToBase64(
             params.alwayson_scripts.roop.args[0]
           );
@@ -141,61 +144,66 @@ export async function getDoneTaskResults() {
     await prisma.$disconnect();
     return {};
   }
-  for (const task of tasks) {
-    const { type, requestId, taskId, data, userId, usePoint } = task;
-    const res = await api['getTaskResults'](taskId);
+  // for (const task of tasks) {
+  await Promise.all(
+    tasks.map(async (task) => {
+      const { type, requestId, taskId, data, userId, usePoint } = task;
+      const res = await api['getTaskResults'](taskId);
 
-    if (res?.data?.data?.length === 0) {
-      await prisma.tasks.update({
-        where: { requestId },
-        data: { status: 'waiting' },
-      });
-      continue;
-    }
+      if (res?.data?.data?.length === 0) {
+        await prisma.tasks.update({
+          where: { requestId },
+          data: { status: 'waiting' },
+        });
+        return;
+        // continue;
+      }
 
-    let image, filePath;
-    try {
-      filePath = JSON.parse(data).images[0];
-      image = res.data.data[0].image;
-    } catch (error) {}
+      let image, filePath;
+      try {
+        filePath = JSON.parse(data).images[0];
+        image = res.data.data[0].image;
+      } catch (error) {}
 
-    if (filePath && image) {
-      filePath = filePath.replace('/root/autodl-tmp', '');
-      await saveImageToServer({
-        imageBase64: image,
-        dir: path.dirname(filePath),
-        filename: path.basename(filePath),
-      });
-    }
+      if (filePath && image) {
+        filePath = filePath.replace('/root/autodl-tmp', '');
+        await saveImageToServer({
+          imageBase64: image,
+          dir: path.dirname(filePath),
+          filename: path.basename(filePath),
+        });
+      }
 
-    try {
-      await prisma.userProcessImageData.upsert({
-        where: {
-          requestId,
-        },
-        update: {
-          outputImagePath: filePath,
-        },
-        create: {
-          outputImagePath: filePath,
-          imageType: 'img2img',
-          userId,
-          requestId,
-          requestStatus: 'finishing',
-          createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-          usePoint,
-        },
-      });
+      try {
+        await prisma.userProcessImageData.upsert({
+          where: {
+            requestId,
+          },
+          update: {
+            outputImagePath: filePath,
+          },
+          create: {
+            outputImagePath: filePath,
+            imageType: 'img2img',
+            userId,
+            requestId,
+            requestStatus: 'finishing',
+            createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            usePoint,
+          },
+        });
 
-      await prisma.tasks.delete({
-        where: {
-          requestId,
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+        await prisma.tasks.delete({
+          where: {
+            requestId,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    })
+  );
+  // }
   await prisma.$disconnect();
   return {};
 }
