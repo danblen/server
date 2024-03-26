@@ -37,11 +37,11 @@ export default async (req, res) => {
   });
   finishedImages = finishedImages
     .filter((item) => item.outputImagePath)
-    .map((item) => {
-      item.outputImagePath = ENV.URL_STATIC + item.outputImagePath;
-      return item;
-    });
-  const pendingImages = await prisma.tasks.findMany({
+    .map((item) => ({
+      outputImagePath: ENV.URL_STATIC + item.outputImagePath,
+      requestId: item.requestId,
+    }));
+  let pendingImages = await prisma.tasks.findMany({
     where: {
       userId,
       status: {
@@ -49,6 +49,9 @@ export default async (req, res) => {
       },
     },
   });
-
+  pendingImages = pendingImages.map((item) => ({
+    requestId: item.requestId,
+    status: item.status,
+  }));
   return { data: { finishedImages, pendingImages } };
 };
