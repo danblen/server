@@ -5,14 +5,16 @@ import { ENV } from '../../../config/index.js';
 import prisma from '../../../db/prisma.js';
 import { saveImageToServer } from '../../common/saveImageToServerApi.js';
 import { api } from './api.js';
+import { downloadImageToBase64 } from '../../../common/downloadImage.js';
 
-const interval = 5000;
+const interval = 1000;
 let loopCount = 0;
 // run();
 async function run() {
   try {
     const tasksCount = await prisma.tasks.count();
     if (tasksCount === 0) {
+      setTimeout(run, 5000);
       return;
     }
 
@@ -39,7 +41,10 @@ async function runWaitingTasks() {
     },
     take: 3,
   });
-
+  if (tasks.length === 0) {
+    await prisma.$disconnect();
+    return {};
+  }
   // for (const task of tasks) {
   await Promise.all(
     tasks.map(async (task) => {
@@ -48,6 +53,9 @@ async function runWaitingTasks() {
         let params;
         try {
           params = JSON.parse(sdParams);
+          params.alwayson_scripts.roop.args[0] = await downloadImageToBase64(
+            params.alwayson_scripts.roop.args[0]
+          );
         } catch (error) {
           // continue;
           return;
@@ -65,7 +73,11 @@ async function runWaitingTasks() {
         if (taskId) {
           await prisma.tasks.update({
             where: { requestId: requestId },
-            data: { taskId, status: 'pending' },
+            data: {
+              taskId,
+              status: 'pending',
+              // startTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            },
           });
         }
       } catch (error) {
@@ -105,6 +117,11 @@ export default async function updatePendingTasks() {
           where: { requestId },
           data: { status: 'failed' },
         });
+      } else if (res?.data?.data?.status === 'pending') {
+        // return prisma.tasks.update({
+        //   where: { requestId },
+        //   data: {  startTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss')},
+        // });
       }
     })
   );

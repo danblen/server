@@ -73,8 +73,8 @@ model Tasks {
   taskType         String?
   status     String? @default("waiting")
   usePoint          Int?    @default(1)//转换所需积分
-  data              Json?
-  sdParams          Json// 存储 JSON 格式的 sdParams 数据
+  data              String? @db.Text
+  sdParams          String? @db.LongText
 }
 model UserLog {
   id     Int    @id @default(autoincrement())

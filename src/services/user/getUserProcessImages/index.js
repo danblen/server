@@ -29,12 +29,18 @@ export default async (req, res) => {
   // }
 
   // 成功了的放到这个表里，默认状态是成功
-  const finishedImages = await prisma.userProcessImageData.findMany({
+  let finishedImages = await prisma.userProcessImageData.findMany({
     where: {
       userId,
       // requestStatus: 'finishing',
     },
   });
+  finishedImages = finishedImages
+    .filter((item) => item.outputImagePath)
+    .map((item) => {
+      item.outputImagePath = ENV.URL_STATIC + item.outputImagePath;
+      return item;
+    });
   const pendingImages = await prisma.tasks.findMany({
     where: {
       userId,
@@ -43,11 +49,6 @@ export default async (req, res) => {
       },
     },
   });
-  finishedImages
-    .filter((item) => item.outputImagePath)
-    .map((item) => {
-      item.outputImagePath = ENV.URL_STATIC + item.outputImagePath;
-      return item;
-    });
+
   return { data: { finishedImages, pendingImages } };
 };

@@ -3,7 +3,7 @@ import forwardToGPU from './forwardToGPU.js';
 import path from 'path';
 import fs from 'fs';
 import { format } from 'date-fns';
-import { projectRoot } from '../../../config/index.js';
+import { ENV, projectRoot } from '../../../config/index.js';
 
 export default async (req, res) => {
   const image = await prisma.userProcessImageData.findUnique({
@@ -11,7 +11,15 @@ export default async (req, res) => {
       requestId: req.body.requestId,
     },
   });
-  return { data: image };
+  if (image) {
+    return {
+      data: {
+        imageUrl: ENV.URL_STATIC + image.outputImagePath,
+        status: image.requestStatus,
+      },
+    };
+  }
+  return { data: null };
 };
 // 积分需要减1
 async function updataUserInfo(userId, requestId) {
