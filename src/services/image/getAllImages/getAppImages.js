@@ -26,7 +26,10 @@ export default async (req, res) => {
     tagPicArray.map((tagPic) => {
       if (tagPic.data) {
         try {
-          const parsedData = JSON.parse(tagPic.data);
+          let parsedData = JSON.parse(tagPic.data);
+          if (typeof parsedData === 'string') {
+            parsedData = JSON.parse(parsedData);
+          }
           if (Array.isArray(parsedData)) {
             tagPic.data = parsedData.map((item) => ENV.URL_STATIC + item);
           }
