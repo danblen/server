@@ -90,25 +90,33 @@ routes.forEach(([routePath, module, middleware]) => {
 });
 // server.setRoute('get', '/v1' + 'getAllImages', getAllImages);
 
-// // 设置存储图片的目录
-// const storage = multer.diskStorage({
-// 	destination: function (req, file, cb) {
-// 		cb(null, 'uploads/');
-// 	},
-// 	filename: function (req, file, cb) {
-// 		cb(
-// 			null,
-// 			file.fieldname + '-' + Date.now() + path.extname(file.originalname)
-// 		);
-// 	},
-// });
+// 创建存储引擎函数，用于指定文件的存储路径和文件名
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // 指定上传路径为请求参数中的 path，若未提供则默认为 uploads 文件夹
+    // const {dir,filename}=req.body
+    const uploadDir = req.query.path ? req.query.path : 'tmpuploads';
 
-// const upload = multer({ storage: storage });
+    // 检查路径是否存在，不存在则创建它
+    const fullUploadDir = path.join(__dirname, uploadDir);
+    if (!fs.existsSync(fullUploadDir)) {
+      fs.mkdirSync(fullUploadDir, { recursive: true });
+    }
 
-// // 处理文件上传的路由
-// server.server.post('/uploadImages', upload.single('file'), (req, res) => {
-// 	res.send(req.body);
-// });
+    cb(null, fullUploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+
+// 创建multer实例
+const upload = multer({ storage: storage });
+
+// 上传文件的路由
+server.server.post('/v1/upload', upload.single('file'), (req, res) => {
+  res.send('File uploaded successfully.');
+});
 
 // 监听端口
 server.listen(ENV.SERVER_PORT);

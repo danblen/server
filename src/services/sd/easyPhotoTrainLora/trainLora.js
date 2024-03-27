@@ -10,6 +10,7 @@ import prisma from '../../../db/prisma.js';
 import { addUserPoints } from '../../common/userPoints.js';
 import { ENV, STATIC_DIR } from '../../../config/index.js';
 import { generatProcess } from '../easyPhotoSwapFace/generated.js';
+import { downloadImageToBase64 } from '../../../common/downloadImage.js';
 
 function getRandomImageByGender(filePath, gender) {
   if (!filePath || !gender) {
@@ -63,9 +64,12 @@ export async function trainProcess(
   usePoint,
   userTrainDataPath
 ) {
-  await deleteTaskInSDRunningTasks(requestId);
   try {
-    const encodedImages = await readImagesFromPath(userTrainDataPath);
+    // const encodedImages = await readImagesFromPath(userTrainDataPath);
+    let paths = JSON.parse(userTrainDataPath);
+    const encodedImages = await Promise.all(
+      paths.map((item) => downloadImageToBase64(ENV.URL_STATIC + item))
+    );
     const currentTime = DateTime.now().toFormat('yyyyMMddHHmm');
     const loraName = `${userId}_${currentTime}`;
 
@@ -96,6 +100,8 @@ export async function trainProcess(
         // timeout: 1800000, // 设置超时时间为30分钟
       }
     );
+    await deleteTaskInSDRunningTasks(requestId);
+
     // console.log('response', response.data);
     if (response.data.message != 'The training has been completed.') {
       console.log('response', response);

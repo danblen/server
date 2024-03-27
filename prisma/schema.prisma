@@ -85,7 +85,7 @@ model UserLog {
 model ImageIndex {
   id          Int     @id @default(autoincrement())
   imageUrl    String?
-  data        Json? 
+  data        String? @db.Text
   description String?
   category    String?
   tags        String?

@@ -1,14 +1,12 @@
 import path from 'path';
 import fs from 'fs';
 import prisma from '../../../db/prisma.js';
-import { saveBase64Image } from '../../../common/file.js';
 import { decreaseUserPoints } from '../../common/userPoints.js';
 import { addTaskInSDRunningTasks } from '../../common/processQueueSql.js';
 import { STATIC_DIR } from '../../../config/index.js';
 
 export default async (req, res) => {
   const { userId, requestId, usePoint = 1, userTrainImages } = req.body;
-  // return { message: 'add task or save images error' };
   if (!userId || !requestId || !userTrainImages) {
     return { message: 'no userId' };
   }
@@ -34,43 +32,45 @@ export default async (req, res) => {
       '/home/ubuntu/code/server/static/trainPic',
       userId
     );
-    if (!fs.existsSync(userTrainDataPath)) {
-      fs.mkdirSync(userTrainDataPath, { recursive: true });
-    } else {
-      // 读取目录中的文件
-      fs.readdirSync(userTrainDataPath).forEach((file) => {
-        // 构建文件路径
-        const filePath = path.join(userTrainDataPath, file);
-        // 删除文件
-        fs.unlinkSync(filePath);
-      });
-    }
+    // if (!fs.existsSync(userTrainDataPath)) {
+    //   fs.mkdirSync(userTrainDataPath, { recursive: true });
+    // } else {
+    //   // 读取目录中的文件
+    //   fs.readdirSync(userTrainDataPath).forEach((file) => {
+    //     // 构建文件路径
+    //     const filePath = path.join(userTrainDataPath, file);
+    //     // 删除文件
+    //     fs.unlinkSync(filePath);
+    //   });
+    // }
 
-    let userTrainPic = [];
-    for (let i = 0; i < userTrainImages.length; i++) {
-      let imagePath = await saveBase64Image(
-        userTrainImages[i],
-        userTrainDataPath,
-        `pic_${i + 1}.jpg`
-      );
-      imagePath = imagePath.replace(STATIC_DIR, '');
-      console.log('imagePath', imagePath);
-      userTrainPic.push(imagePath);
-    }
+    // let userTrainPic = [];
+    // for (let i = 0; i < userTrainImages.length; i++) {
+    // let imagePath = await saveBase64Image(
+    //   userTrainImages[i],
+    //   userTrainDataPath,
+    //   `pic_${i + 1}.jpg`
+    // );
+    // await saveImageToServer({
+    //   imageBase64: userTrainImages[i],
+    //   dir: userTrainDataPath,
+    //   filename: `pic_${i + 1}.png`,
+    // });
+    // imagePath = imagePath.replace(STATIC_DIR, '');
+    // console.log('imagePath', imagePath);
+    // userTrainPic.push(imagePath);
+    // }
 
-    if (!userTrainPic.length) {
-      return { message: 'save user images error' };
-    }
+    // if (!userTrainPic.length) {
+    //   return { message: 'save user images error' };
+    // }
 
-    if (!user) {
-      return { data: 'check userId' }; // 数据不存在
-    }
     let updateUser = await prisma.User.update({
       where: {
         userId,
       },
       data: {
-        userTrainPic: JSON.stringify(userTrainPic),
+        userTrainPic: JSON.stringify(userTrainImages),
         loraName: '',
         loraStatus: 'pending',
       },
@@ -88,7 +88,7 @@ export default async (req, res) => {
         null,
         null,
         'train',
-        userTrainDataPath,
+        JSON.stringify(userTrainImages),
         null
       )
     ) {
