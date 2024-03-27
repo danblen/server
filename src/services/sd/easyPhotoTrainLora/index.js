@@ -28,10 +28,10 @@ export default async (req, res) => {
   }
 
   try {
-    const userTrainDataPath = path.join(
-      '/home/ubuntu/code/server/static/trainPic',
-      userId
-    );
+    // const userTrainDataPath = path.join(
+    //   '/home/ubuntu/code/server/static/trainPic',
+    //   userId
+    // );
     // if (!fs.existsSync(userTrainDataPath)) {
     //   fs.mkdirSync(userTrainDataPath, { recursive: true });
     // } else {

@@ -40,23 +40,23 @@ function getRandomImageByGender(filePath, gender) {
   return `${fullPath}/${files[randomIndex]}`;
 }
 
-async function readImagesFromPath(userTrainImagesPath) {
-  try {
-    const encodedImages = [];
-    // 遍历指定路径下的所有文件
-    const files = fs.readdirSync(userTrainImagesPath);
-    for (const file of files) {
-      const imagePath = path.join(userTrainImagesPath, file);
-      // 读取文件内容并添加到 encodedImages 数组中
-      const imageData = fs.readFileSync(imagePath, 'base64');
-      encodedImages.push(imageData);
-    }
-    return encodedImages;
-  } catch (error) {
-    console.error('Error reading images from path:', error.message);
-    throw error;
-  }
-}
+// async function readImagesFromPath(userTrainImagesPath) {
+//   try {
+//     const encodedImages = [];
+//     // 遍历指定路径下的所有文件
+//     const files = fs.readdirSync(userTrainImagesPath);
+//     for (const file of files) {
+//       const imagePath = path.join(userTrainImagesPath, file);
+//       // 读取文件内容并添加到 encodedImages 数组中
+//       const imageData = fs.readFileSync(imagePath, 'base64');
+//       encodedImages.push(imageData);
+//     }
+//     return encodedImages;
+//   } catch (error) {
+//     console.error('Error reading images from path:', error.message);
+//     throw error;
+//   }
+// }
 
 export async function trainProcess(
   userId,
@@ -100,7 +100,7 @@ export async function trainProcess(
         // timeout: 1800000, // 设置超时时间为30分钟
       }
     );
-    await deleteTaskInSDRunningTasks(requestId);
+    deleteTaskInSDRunningTasks(requestId);
 
     // console.log('response', response.data);
     if (response.data.message != 'The training has been completed.') {

@@ -39,7 +39,7 @@ async function runWaitingTasks() {
     where: {
       status: 'waiting',
     },
-    take: 3,
+    // take: 3,
   });
   if (tasks.length === 0) {
     await prisma.$disconnect();
@@ -56,9 +56,6 @@ async function runWaitingTasks() {
           if (typeof params === 'string') {
             params = JSON.parse(params);
           }
-          params.alwayson_scripts.roop.args[0] = await downloadImageToBase64(
-            params.alwayson_scripts.roop.args[0]
-          );
         } catch (error) {
           // continue;
           return;
@@ -67,6 +64,9 @@ async function runWaitingTasks() {
         let taskId = '';
         if (taskType === 'img2img') {
           const res = await api['img2img'](params);
+          params.alwayson_scripts.roop.args[0] = await downloadImageToBase64(
+            params.alwayson_scripts.roop.args[0]
+          );
           taskId = res?.data?.task_id;
         } else if (taskType === 'txt2img') {
           const res = await api['txt2img'](params);
