@@ -7,8 +7,6 @@ import multer from 'multer';
 import path from 'path';
 
 import { CloudBaseRunServer } from './server.js';
-import getBanners from './services/image/getBanners/index.js';
-import storeImages from './services/image/storeImages/index.js';
 import {
   uploadImages,
   updateImageUserUploadInfo,
@@ -53,8 +51,6 @@ const server = new CloudBaseRunServer();
 // 注册路由，也就是api接口
 const routes = [
   ['/login', login],
-  ['/storeImages', storeImages],
-  ['/getBanners', getBanners],
   ['/getAllImages', getAllImages],
   ['/getUserInfo', getUserInfo],
   ['/addPoints', addPoints],
