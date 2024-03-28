@@ -9,7 +9,7 @@ import { downloadImageToBase64 } from '../../../common/downloadImage.js';
 
 const interval = 1000;
 let loopCount = 0;
-run();
+// run();
 async function run() {
   try {
     const tasksCount = await prisma.tasks.count();
