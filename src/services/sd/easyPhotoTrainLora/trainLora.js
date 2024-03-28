@@ -65,6 +65,7 @@ export async function trainProcess(
   userTrainDataPath
 ) {
   try {
+    deleteTaskInSDRunningTasks(requestId);
     // const encodedImages = await readImagesFromPath(userTrainDataPath);
     let paths = JSON.parse(userTrainDataPath);
     const encodedImages = await Promise.all(
@@ -88,19 +89,21 @@ export async function trainProcess(
       network_alpha: 64,
       instance_images: encodedImages,
     });
-
-    const response = await axios.post(
-      'https://u349479-89bd-0be97fcd.westb.seetacloud.com:8443/easyphoto/easyphoto_train_forward',
-      // `${ENV.GPU_HOST}/easyphoto/easyphoto_train_forward`,
-      requestData,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // timeout: 1800000, // 设置超时时间为30分钟
-      }
-    );
-    deleteTaskInSDRunningTasks(requestId);
+    let response;
+    try {
+      response = await axios.post(
+        `${ENV.GPU_HOST2}/easyphoto/easyphoto_train_forward`,
+        requestData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          // timeout: 1800000, // 设置超时时间为30分钟
+        }
+      );
+    } catch (error) {
+      console.log('Error occurred during training:', error);
+    }
 
     // console.log('response', response.data);
     if (response.data.message != 'The training has been completed.') {

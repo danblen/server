@@ -25,6 +25,7 @@ const ENV_MAP = {
     API_TYPE: process.env.API_TYPE,
     URL_STATIC: process.env.URL_STATIC,
     GPU_HOST: process.env.GPU_HOST,
+    GPU_HOST2: process.env.GPU_HOST2,
   },
   test: {
     SERVER_HOST: process.env.SERVER_HOST,
@@ -32,6 +33,7 @@ const ENV_MAP = {
     API_TYPE: process.env.API_TYPE_TEST,
     URL_STATIC: process.env.URL_STATIC,
     GPU_HOST: process.env.GPU_HOST,
+    GPU_HOST2: process.env.GPU_HOST2,
   },
   dev: {
     SERVER_HOST: process.env.SERVER_HOST,
@@ -39,6 +41,7 @@ const ENV_MAP = {
     API_TYPE: process.env.API_TYPE,
     URL_STATIC: process.env.URL_STATIC,
     GPU_HOST: process.env.GPU_HOST,
+    GPU_HOST2: process.env.GPU_HOST2,
   },
 };
 export let ENV = {
@@ -47,6 +50,7 @@ export let ENV = {
   API_TYPE: ' ',
   URL_STATIC: '',
   GPU_HOST: '',
+  GPU_HOST2: '',
 };
 ENV = ENV_MAP[process.env.NODE_ENV];
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
