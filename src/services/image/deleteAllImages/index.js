@@ -3,7 +3,6 @@ import prisma from '../../../db/prisma.js';
 // 根据用户ID删除所有图像接口
 export default async (query) => {
   const { userId } = query.body;
-  console.log(userId);
   if (!userId) {
     return { message: '没有要删除的数据。' };
   }
