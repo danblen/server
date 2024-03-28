@@ -9,7 +9,7 @@ import { downloadImageToBase64 } from '../../../common/downloadImage.js';
 
 const interval = 1000;
 let loopCount = 0;
-// run();
+run();
 async function run() {
   try {
     const tasksCount = await prisma.tasks.count();
@@ -26,8 +26,8 @@ async function run() {
     loopCount++;
     console.log(`开始下一轮:loopCount =${loopCount}, tasksCount=${tasksCount}`);
     await runWaitingTasks();
-    updatePendingTasks();
-    getDoneTaskResults();
+    await updatePendingTasks();
+    await getDoneTaskResults();
     console.log('一轮执行结束');
   } catch (error) {
     console.error('An error occurred:', error);
@@ -108,23 +108,27 @@ export default async function updatePendingTasks() {
   await Promise.all(
     tasks.map(async (task) => {
       const { requestId, taskId } = task;
-      const res = await api['getTask'](taskId);
+      try {
+        const res = await api['getTask'](taskId);
 
-      if (res?.data?.data?.status === 'done') {
-        return prisma.tasks.update({
-          where: { requestId },
-          data: { data: res.data.data.result, status: 'done' },
-        });
-      } else if (res?.data?.data?.status === 'failed') {
-        return prisma.tasks.update({
-          where: { requestId },
-          data: { status: 'failed' },
-        });
-      } else if (res?.data?.data?.status === 'pending') {
-        // return prisma.tasks.update({
-        //   where: { requestId },
-        //   data: {  startTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss')},
-        // });
+        if (res?.data?.data?.status === 'done') {
+          return prisma.tasks.update({
+            where: { requestId },
+            data: { data: res.data.data.result, status: 'done' },
+          });
+        } else if (res?.data?.data?.status === 'failed') {
+          return prisma.tasks.update({
+            where: { requestId },
+            data: { status: 'failed' },
+          });
+        } else if (res?.data?.data?.status === 'pending') {
+          // return prisma.tasks.update({
+          //   where: { requestId },
+          //   data: {  startTime: format(new Date(), 'yyyy-MM-dd HH:mm:ss')},
+          // });
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
       }
     })
   );
@@ -148,9 +152,14 @@ export async function getDoneTaskResults() {
   await Promise.all(
     tasks.map(async (task) => {
       const { type, requestId, taskId, data, userId, usePoint } = task;
-      const res = await api['getTaskResults'](taskId);
-
-      if (res?.data?.data?.length === 0) {
+      let res;
+      try {
+        res = await api['getTaskResults'](taskId);
+      } catch (error) {
+        console.error('Error occurred while fetching task results:', error);
+        return;
+      }
+      if (!res?.data?.data?.length) {
         await prisma.tasks.update({
           where: { requestId },
           data: { status: 'waiting' },
