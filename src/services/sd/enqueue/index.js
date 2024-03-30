@@ -1,9 +1,7 @@
-import axios from 'axios';
-import { ENV } from '../../../config/index.js';
-import { api } from './api.js';
 import prisma from '../../../db/prisma.js';
 import { format } from 'date-fns';
 import taskManager from './taskManager.js';
+import { decreaseUserPoints } from '../../common/userPoints.js';
 
 export default async (req) => {
   const { userId, usePoint = 1, taskType, requestId = '', sdParams } = req.body;
@@ -21,7 +19,7 @@ export default async (req) => {
   if (user.points < usePoint) {
     return { message: '积分不够了~' };
   }
-
+  decreaseUserPoints(userId, usePoint);
   addTaskInTasks({
     userId,
     requestId,
