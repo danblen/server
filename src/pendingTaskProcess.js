@@ -55,25 +55,25 @@ export async function pendingTaskProcess() {
               pendingTask.mainImagePath,
               pendingTask.loraName
             );
-          } else if (pendingTask.imageType === 'img2img') {
-            console.log('start task', pendingTask.imageType);
-            await img2imgProcess(
-              pendingTask.userId,
-              pendingTask.requestId,
-              pendingTask.usePoint,
-              pendingTask.img2imgreqData,
-              pendingTask.mainImagePath,
-              pendingTask.roopImagePath ? pendingTask.roopImagePath : null
-            );
-          } else if (pendingTask.imageType === 'txt2img') {
-            console.log('start task', pendingTask.imageType);
-            await txt2imgProcess(
-              pendingTask.userId,
-              pendingTask.requestId,
-              pendingTask.usePoint,
-              pendingTask.txt2imgreqData,
-              pendingTask.roopImagePath
-            );
+            // } else if (pendingTask.imageType === 'img2img') {
+            //   console.log('start task', pendingTask.imageType);
+            //   await img2imgProcess(
+            //     pendingTask.userId,
+            //     pendingTask.requestId,
+            //     pendingTask.usePoint,
+            //     pendingTask.img2imgreqData,
+            //     pendingTask.mainImagePath,
+            //     pendingTask.roopImagePath ? pendingTask.roopImagePath : null
+            //   );
+            // } else if (pendingTask.imageType === 'txt2img') {
+            //   console.log('start task', pendingTask.imageType);
+            //   await txt2imgProcess(
+            //     pendingTask.userId,
+            //     pendingTask.requestId,
+            //     pendingTask.usePoint,
+            //     pendingTask.txt2imgreqData,
+            //     pendingTask.roopImagePath
+            //   );
           } else {
             console.error(
               'Error task type while processing pending tasks:',

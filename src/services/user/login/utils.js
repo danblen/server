@@ -1,4 +1,5 @@
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
+
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { wxConfig } from '../../../config/wxConfig.js';
@@ -14,7 +15,7 @@ export const generateToken = (user) => {
 };
 
 export const generateUserId = () => {
-  return uuid.v4().slice(0, 8);
+  return uuidv4().slice(0, 8);
 };
 
 export const getWXOpenId = async (reqBody) => {

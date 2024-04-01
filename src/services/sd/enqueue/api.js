@@ -41,3 +41,16 @@ api.getTaskPosition = async (sdParams, id) => {
   );
   return response.data;
 };
+api.clear = async (sdParams, id) => {
+  let response = await axios.post(
+    `${ENV.GPU_HOST}/agent-scheduler/v1/queue/clear`,
+    sdParams
+  );
+  return response.data;
+};
+api.historyClear = async (sdParams, id) => {
+  let response = await axios.post(
+    `${ENV.GPU_HOST}/agent-scheduler/v1/history/clear`
+  );
+  return response.data;
+};

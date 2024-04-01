@@ -6,10 +6,12 @@ import prisma from '../../../db/prisma.js';
 import { saveImageToServer } from '../../common/saveImageToServerApi.js';
 import { api } from './api.js';
 import { downloadImageToBase64 } from '../../../common/downloadImage.js';
+import { notifyUsers } from './notifyUser.js';
 
 const interval = 1000;
 let loopCount = 0;
 // run();
+// clear();
 async function run() {
   try {
     const tasksCount = await prisma.tasks.count();
@@ -17,12 +19,15 @@ async function run() {
       setTimeout(run, 5000);
       return;
     }
-
-    // const res = await axios.get(ENV.GPU_HOST);
-    // const gpuReady = res?.status === 200;
-    // if (!gpuReady) {
-    //   return;
-    // }
+    try {
+      const res = await axios.get(ENV.GPU_HOST);
+      const gpuReady = res?.status === 200;
+      if (!gpuReady) {
+        return;
+      }
+    } catch (error) {
+      return;
+    }
     loopCount++;
     console.log(`开始下一轮:loopCount =${loopCount}, tasksCount=${tasksCount}`);
     await runWaitingTasks();
@@ -34,12 +39,17 @@ async function run() {
   }
   setTimeout(run, interval);
 }
+async function clear() {
+  // const res = await api['clear']();
+  const res = await api['historyClear']();
+  return res;
+}
 async function runWaitingTasks() {
   const tasks = await prisma.tasks.findMany({
     where: {
       status: 'waiting',
     },
-    // take: 3,
+    take: 10,
   });
   if (tasks.length === 0) {
     await prisma.$disconnect();
@@ -148,6 +158,7 @@ export async function getDoneTaskResults() {
     await prisma.$disconnect();
     return {};
   }
+  // notifyUsers(tasks);
   // for (const task of tasks) {
   await Promise.all(
     tasks.map(async (task) => {
