@@ -10,7 +10,7 @@ import { notifyUsers } from './notifyUser.js';
 
 const interval = 1000;
 let loopCount = 0;
-// run();
+run();
 // clear();
 async function run() {
   try {
@@ -40,8 +40,9 @@ async function run() {
   setTimeout(run, interval);
 }
 async function clear() {
-  // const res = await api['clear']();
-  const res = await api['historyClear']();
+  let res = await api['clear']();
+  res = await api['historyClear']();
+  res = await prisma.tasks.deleteMany();
   return res;
 }
 async function runWaitingTasks() {
@@ -158,7 +159,7 @@ export async function getDoneTaskResults() {
     await prisma.$disconnect();
     return {};
   }
-  // notifyUsers(tasks);
+  notifyUsers(tasks);
   // for (const task of tasks) {
   await Promise.all(
     tasks.map(async (task) => {
