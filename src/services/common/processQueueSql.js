@@ -78,7 +78,11 @@ export async function addGenImageInUserProcessImageData(
       },
     });
   } catch (error) {
-    console.error('Error create userProcessImageData info in SQL:', error);
+    console.error(
+      'Error create userProcessImageData info in SQL:',
+      requestId,
+      error
+    );
   } finally {
   }
 }

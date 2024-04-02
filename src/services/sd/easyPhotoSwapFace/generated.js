@@ -202,7 +202,7 @@ export async function generatProcess(
     );
     return processRes;
   } catch (error) {
-    console.log('Error occurred during training:', error.message);
+    console.log('Error occurred during generated:', error.message);
     addUserPoints(userId, usePoint);
     await addGenImageInUserProcessImageData(
       userId,
@@ -211,7 +211,7 @@ export async function generatProcess(
       null,
       null,
       null,
-      'train',
+      'loraFace',
       error.message
     );
     return null;

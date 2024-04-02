@@ -6,6 +6,7 @@ import * as processQueue from './services/common/processQueueSql.js';
 // import txt2img from './services/sd/txt2img/txt2imgProcess.js';
 import { trainProcess } from './services/sd/easyPhotoTrainLora/trainLora.js';
 import { generatProcess } from './services/sd/easyPhotoSwapFace/generated.js';
+import { samPredict } from './services/sd/samPredict/samPredict.js';
 import { img2imgProcess } from './services/sd/img2img/img2imgProcess.js';
 import { txt2imgProcess } from './services/sd/txt2img/txt2imgProcess.js';
 import { spawn } from 'child_process';
@@ -31,7 +32,7 @@ export async function pendingTaskProcess() {
       if (pendingTask) {
         // const pendingTask = await processQueue.getEarliestPendingTask();
 
-        console.log('start task', pendingTask);
+        console.log('start task1', pendingTask);
         // 处理挂起任务
         if (
           pendingTask &&
@@ -49,6 +50,15 @@ export async function pendingTaskProcess() {
           } else if (pendingTask.imageType === 'loraFace') {
             console.log('start task', pendingTask.imageType);
             await generatProcess(
+              pendingTask.userId,
+              pendingTask.requestId,
+              pendingTask.usePoint,
+              pendingTask.mainImagePath,
+              pendingTask.loraName
+            );
+          } else if (pendingTask.imageType === 'SamPre') {
+            console.log('start task', pendingTask.imageType);
+            await samPredict(
               pendingTask.userId,
               pendingTask.requestId,
               pendingTask.usePoint,
@@ -75,10 +85,7 @@ export async function pendingTaskProcess() {
             //     pendingTask.roopImagePath
             //   );
           } else {
-            console.error(
-              'Error task type while processing pending tasks:',
-              error
-            );
+            console.error('Error task type while processing pending tasks');
           }
           await sleep(200);
         }

@@ -33,6 +33,7 @@ import uploadLaunchInfo from './services/user/uploadLaunchInfo/index.js';
 import getTagImages from './services/image/getTagImages/index.js';
 import img2img from './services/sd/img2img/index.js';
 import txt2img from './services/sd/txt2img/index.js';
+import samPredict from './services/sd/samPredict/index.js';
 import easyPhotoTrainLora from './services/sd/easyPhotoTrainLora/index.js';
 import easyPhotoSwapFace from './services/sd/easyPhotoSwapFace/index.js';
 import update from './services/image/getImages/update.js';
@@ -79,6 +80,7 @@ const routes = [
   ['/getImages', getImages],
   ['/easyPhotoTrainLora', easyPhotoTrainLora],
   ['/easyPhotoSwapFace', easyPhotoSwapFace],
+  ['/samPredict', samPredict],
   ['/pay', pay],
 ];
 
