@@ -54,6 +54,7 @@ export let ENV = {
 };
 ENV = ENV_MAP[process.env.NODE_ENV];
 export const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+export const adminopenid = process.env.adminopenid;
 
 export const COSConfig = {
   SecretId: process.env.SecretId,

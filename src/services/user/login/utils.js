@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
