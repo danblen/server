@@ -62,8 +62,7 @@ export async function pendingTaskProcess() {
               pendingTask.userId,
               pendingTask.requestId,
               pendingTask.usePoint,
-              pendingTask.mainImagePath,
-              pendingTask.loraName
+              pendingTask.mainImagePath
             );
             // } else if (pendingTask.imageType === 'img2img') {
             //   console.log('start task', pendingTask.imageType);

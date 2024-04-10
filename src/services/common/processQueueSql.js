@@ -14,8 +14,9 @@ export async function addTaskInSDRunningTasks(
   txt2imgreqData = ''
 ) {
   try {
+    console.log('create sDRunningTasks requestId:', requestId);
     // 新建一条换脸任务的数据，保存数据到数据库
-    await prisma.sDRunningTasks.create({
+    const pendingTask = await prisma.sDRunningTasks.create({
       data: {
         userId: userId,
         imageType: processType,
@@ -31,15 +32,16 @@ export async function addTaskInSDRunningTasks(
         txt2imgreqData: txt2imgreqData,
       },
     });
-    return true;
+    return pendingTask;
   } catch (error) {
     console.error('Error create sDRunningTasks info in SQL:', error);
-    return false;
+    return null;
   } finally {
   }
 }
 export async function deleteTaskInSDRunningTasks(requestId) {
   try {
+    console.log('delete sDRunningTasks requestId:', requestId);
     // 新建一条换脸任务的数据，保存数据到数据库
     await prisma.sDRunningTasks.delete({
       where: {
@@ -59,9 +61,11 @@ export async function addGenImageInUserProcessImageData(
   roopImagePath,
   outputImagePath,
   processType,
-  requestStatus
+  requestStatus,
+  tempImagePath
 ) {
   try {
+    console.log('add userProcessImageData requestId:', requestId);
     // 新建一条换脸任务的数据，保存数据到数据库
     await prisma.userProcessImageData.create({
       data: {
@@ -75,6 +79,7 @@ export async function addGenImageInUserProcessImageData(
         usePoint: usePoint,
         requestStatus: requestStatus,
         outputImagePath,
+        tempImagePath: tempImagePath,
       },
     });
   } catch (error) {

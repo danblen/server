@@ -12,6 +12,8 @@ import { ENV, STATIC_DIR } from '../../../config/index.js';
 import { addUserPoints } from '../../common/userPoints.js';
 import { saveBase64Image } from '../../../common/file.js';
 import { inpaitParam } from './inpaitParam.js';
+import { processSDRequest } from '../img2img/img2imgProcess.js';
+import { error } from 'console';
 
 // 辅助函数：检查是否为有效 URL
 function isValidUrl(url) {
@@ -31,7 +33,7 @@ export function generateUniqueId() {
 }
 
 // 发送图像数据到 GPU 进行处理
-async function forwardToGPU(encodedImage, loraName) {
+async function forwardToGPU(encodedImage) {
   const requestData = {
     sam_model_name: 'sam_vit_l_0b3195.pth', // 蒙版模型名称
     input_image: encodedImage, // 图像base64
@@ -58,12 +60,11 @@ async function forwardToGPU(encodedImage, loraName) {
 }
 
 // 处理图片函数
-async function processImage(encodedImage, loraName, userId) {
+async function processImage(encodedImage, userId) {
   try {
     // 向 GPU 发送请求处理图像
     const { msg, blended_images, masks, masked_images } = await forwardToGPU(
-      encodedImage,
-      loraName
+      encodedImage
     );
     console.log('Message:', msg);
 
@@ -79,22 +80,22 @@ async function processImage(encodedImage, loraName, userId) {
       // console.log('Number of masked_images:', masked_images.length);
 
       // 保存 blended_images
-      let blended_outputFile = [];
-      for (let i = 0; i < blended_images.length; i++) {
-        // 解码处理后的图像并保存
-        const relativePathDir = path.join(
-          '/userImages',
-          userId,
-          format(new Date(), 'yyyy-MM-dd')
-        );
-        const fileName = `${Date.now()}_blended.png`;
-        blended_outputFile[i] = await saveBase64Image(
-          blended_images[i],
-          STATIC_DIR + relativePathDir,
-          fileName
-        );
-        console.log('blended outputFile', blended_outputFile);
-      }
+      // let blended_outputFile = [];
+      // for (let i = 0; i < blended_images.length; i++) {
+      //   // 解码处理后的图像并保存
+      //   const relativePathDir = path.join(
+      //     '/userImages',
+      //     userId,
+      //     format(new Date(), 'yyyy-MM-dd')
+      //   );
+      //   const fileName = `${Date.now()}_blended.png`;
+      //   blended_outputFile[i] = await saveBase64Image(
+      //     blended_images[i],
+      //     STATIC_DIR + relativePathDir,
+      //     fileName
+      //   );
+      //   console.log('blended outputFile', blended_outputFile);
+      // }
 
       // 保存 masks
       let mask_outputFile;
@@ -133,10 +134,37 @@ async function processImage(encodedImage, loraName, userId) {
       //   console.log('blended outputFile', masked_images_outputFile);
       // }
 
+      console.log('mask_outputFile:', mask_outputFile);
+      mask_outputFile = mask_outputFile.replace(STATIC_DIR, '');
+      inpaitParam.init_images[0] = encodedImage;
+      inpaitParam.mask = masks[0];
+      const resImg2Img = await axios.post(
+        `https://u349479-89bd-0be97fcd.westb.seetacloud.com:8443/sdapi/v1/img2img`,
+        inpaitParam
+      );
+
+      if (resImg2Img?.data) {
+        const relativePathDir = path.join(
+          '/userImages',
+          userId,
+          format(new Date(), 'yyyy-MM-dd')
+        );
+        const fileName = `${Date.now()}.png`;
+        const saveUrl = await saveBase64Image(
+          resImg2Img.data.images[0],
+          STATIC_DIR + relativePathDir,
+          fileName
+        );
+        console.log('outfile :', saveUrl);
+      } else {
+        throw error;
+      }
+
       return {
         message: msg,
         status: 200,
-        outputFilePaths: mask_outputFile,
+        tempFilePaths: mask_outputFile,
+        outputFilePaths: saveUrl,
         // {
         // blended_images: blended_outputFile,
         // masks: mask_outputFile,
@@ -154,13 +182,13 @@ async function processImage(encodedImage, loraName, userId) {
 }
 
 // 处理本地图片
-async function processImagePath(imagePath, loraName, userId) {
+async function processImagePath(imagePath, userId) {
   try {
     // 读取本地文件数据
     const imageData = await fs.promises.readFile(imagePath);
     // 将获取的图片数据转换为 base64 字符串
     const base64Image = Buffer.from(imageData).toString('base64');
-    return await processImage(base64Image, loraName, userId);
+    return await processImage(base64Image, userId);
   } catch (error) {
     console.error(
       `Error occurred while processing image from path ${imagePath}:`,
@@ -171,7 +199,7 @@ async function processImagePath(imagePath, loraName, userId) {
 }
 
 // 处理远程图片
-async function processImageUrl(imageUrl, loraName, userId) {
+async function processImageUrl(imageUrl, userId) {
   try {
     // 发送 GET 请求获取远程图片数据
     const response = await axios.get(imageUrl, {
@@ -189,13 +217,7 @@ async function processImageUrl(imageUrl, loraName, userId) {
   }
 }
 
-export async function samPredict(
-  userId,
-  requestId,
-  usePoint,
-  imageUrls,
-  loraName
-) {
+export async function samPredict(userId, requestId, usePoint, imageUrls) {
   if (requestId != '-1') {
     await deleteTaskInSDRunningTasks(requestId);
   } else {
@@ -205,11 +227,11 @@ export async function samPredict(
     let processRes = null;
     if (isValidUrl(imageUrls)) {
       // 处理远程图片
-      processRes = await processImageUrl(imageUrls, loraName, userId);
+      processRes = await processImageUrl(imageUrls, userId);
       console.log('processImageUrl:', processRes);
     } else if (fs.existsSync(imageUrls)) {
       // 处理本地文件路径
-      processRes = await processImagePath(imageUrls, loraName, userId);
+      processRes = await processImagePath(imageUrls, userId);
       console.log('processImagePath:', processRes);
     } else {
       console.log('Image URL or path does not exist:', imageUrls);
@@ -225,15 +247,11 @@ export async function samPredict(
         null,
         null,
         'SamPre',
-        processRes.message
+        processRes.message,
+        null
       );
       return null;
     }
-    console.log('processRes.outputFilePaths ', processRes.outputFilePaths);
-    processRes.outputFilePaths = processRes?.outputFilePaths?.replace(
-      STATIC_DIR,
-      ''
-    );
     await addGenImageInUserProcessImageData(
       userId,
       requestId,
@@ -242,7 +260,8 @@ export async function samPredict(
       null,
       processRes.outputFilePaths,
       'SamPre',
-      'finishing'
+      'finishing',
+      processRes.tempImagePath
     );
     return processRes;
   } catch (error) {
@@ -256,7 +275,8 @@ export async function samPredict(
       null,
       null,
       'SamPre',
-      error.message
+      error.message,
+      null
     );
     return null;
   }

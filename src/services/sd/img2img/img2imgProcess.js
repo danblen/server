@@ -20,7 +20,40 @@ function isValidUrl(url) {
     return false;
   }
 }
-// 调用sd接口，查询换脸结果
+
+export async function processSDRequest(
+  img2imgreqData,
+  mainImageDir,
+  roopImageDir
+) {
+  try {
+    if (img2imgreqData?.alwayson_scripts?.roop?.args) {
+      img2imgreqData.alwayson_scripts.roop.args[0] = imageData;
+      console.log(img2imgreqData.alwayson_scripts.roop.args[0].slice(0, 20));
+    }
+
+    if (mainImageDir && !isValidUrl(mainImageDir)) {
+      const imageData = fs.readFileSync(mainImageDir, 'base64');
+      img2imgreqData.init_images[0] = imageData;
+    }
+    if (img2imgreqData?.alwayson_scripts?.roop?.args) {
+      const imageData = fs.readFileSync(roopImageDir, 'base64');
+      img2imgreqData.alwayson_scripts.roop.args[0] = imageData;
+    }
+
+    console.log('start post');
+    let res = await axios.post(
+      `https://u349479-89bd-0be97fcd.westb.seetacloud.com:8443/sdapi/v1/img2img`,
+      img2imgreqData
+    );
+
+    return res;
+  } catch (error) {
+    console.log('Error occurred during processing:', error);
+    throw error;
+  }
+}
+
 export async function img2imgProcess(
   userId,
   requestId,
@@ -29,27 +62,12 @@ export async function img2imgProcess(
   mainImageDir,
   roopImageDir
 ) {
+  console.log('start img2imgProcess');
   await deleteTaskInSDRunningTasks(requestId);
   try {
     const sdParams = JSON.parse(img2imgreqData);
-    if (img2imgreqData?.alwayson_scripts?.roop?.args) {
-      img2imgreqData.alwayson_scripts.roop.args[0] = imageData;
-      console.log(img2imgreqData.alwayson_scripts.roop.args[0].slice(0, 20));
-    }
+    let res = await processSDRequest(sdParams, mainImageDir, roopImageDir);
 
-    if (mainImageDir && !isValidUrl(mainImageDir)) {
-      const imageData = fs.readFileSync(mainImageDir, 'base64');
-      sdParams.init_images[0] = imageData;
-    }
-    if (sdParams?.alwayson_scripts?.roop?.args) {
-      const imageData = fs.readFileSync(roopImageDir, 'base64');
-      sdParams.alwayson_scripts.roop.args[0] = imageData;
-    }
-    let res = await axios.post(
-      `https://u349479-89bd-0be97fcd.westb.seetacloud.com:8443/sdapi/v1/img2img`,
-      sdParams
-    );
-    // console.log('out:', res.data.message);
     if (res?.data) {
       const relativePathDir = path.join(
         '/userImages',
@@ -91,7 +109,7 @@ export async function img2imgProcess(
     );
     return false;
   } catch (error) {
-    console.log('Error occurred during img2img:', error.message);
+    console.log('Error occurred during img2img:', error);
     addUserPoints(userId, usePoint);
     await addGenImageInUserProcessImageData(
       userId,
